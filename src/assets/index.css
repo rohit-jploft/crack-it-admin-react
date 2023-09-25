@@ -1,0 +1,104 @@
+.table-bodys .row-data {
+  padding: 15px !important;
+}
+.add-proty-mn {
+  margin-right: 20px;
+}
+.hellos {
+  position: relative;
+  margin-bottom: 20px;
+}
+.hellos p {
+  margin-left: -60px;
+}
+
+.country-selector {
+  left: 0 !important;
+}
+.react-tel-input {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  position: relative;
+  width: 100%;
+}
+
+.react-tel-input .form-control {
+  width: 100% !important;
+  padding: 25px 14px 25px 45px !important;
+}
+.phone-number-fils {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 81%;
+  height: 100%;
+}
+.phone-number-fils input {
+  border: 0;
+  height: 100%;
+  padding: 17px 0;
+  border-width: 0;
+}
+.phone-number-fils fieldset {
+  border-color: transparent !important;
+}
+/* Incoming message style (grey background) */
+/* Incoming message style (on the left) */
+.incoming {
+  background-color: #f2f2f2;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px;
+  width: 50%;
+  display: flex;
+  justify-content: flex-start;
+  align-self: flex-start;
+  clear: both; /* Ensure messages don't overlap */
+}
+
+/* Outgoing message style (on the right) */
+.outgoing {
+  background-color: #4caf50;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px;
+  width: 45%;
+  float: right;
+  align-self: flex-end;
+  clear: both; /* Ensure messages don't overlap */
+}
+
+.message-list {
+  max-height: 500px;
+  min-height: 500px;
+  overflow-y: scroll;
+}
+.chat-input {
+  width: 90% !important;
+  padding: 20px !important;
+}
+.message-input{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.message-input button {
+  margin-top: 23px;
+  height: 50px;
+}
+.Mui-selected{
+    background-color: #4caf50; /* Change the background color */
+    color: #333; /* Change the text color */
+    font-weight: bold; /* Add additional styling as needed */
+}
+/* Media query for screens up to 730 pixels wide */
+@media (max-width: 730px) {
+  .chat-input {
+    width: 80% !important;
+    padding: 20px !important;
+  }
+  .message-input button {
+    margin-top: 23px;
+  }
+}
