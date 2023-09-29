@@ -36,7 +36,6 @@ import { getAllMeeting } from '../data/meetings';
 import { getTimeFromTimestamps, getDateFromTimeStamps } from '../utils/helper';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
 
-
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -98,7 +97,7 @@ export default function MeetingsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [meetingsData, setMeetingsData] = useState([]);
-  const preStatus = type || ''
+  const preStatus = type || '';
   const [status, setStatus] = useState(preStatus);
   const [totalCount, setTotalCount] = useState();
 
@@ -201,7 +200,7 @@ export default function MeetingsPage() {
           {/* <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} /> */}
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: 800}}>
               <Table>
                 <UserListHead
                   order={order}
@@ -213,7 +212,7 @@ export default function MeetingsPage() {
                   // onSelectAllClick={handleSelectAllClick}
                 />
 
-                <TableBody className="table-bodys">
+                <TableBody className="table-bodys" sx={{  maxHeight: '400px' ,overflow: 'auto'}}>
                   {meetingsData?.map((row) => {
                     const { _id, jobCategory, user, expert, date, startTime, endTime, status } = row;
                     const selectedUser = selected.indexOf(_id) !== -1;
@@ -253,11 +252,13 @@ export default function MeetingsPage() {
                           <Label color={status === 'ACCEPTED' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
                         </TableCell>
                         <TableCell align="left">
-                         {status === "ACCEPTED" ? (
-                           <IconButton>
-                           <ChatIcon/>
-                         </IconButton>
-                         ): 'No Chat'}
+                          {status === 'ACCEPTED' ? (
+                            <IconButton>
+                              <ChatIcon />
+                            </IconButton>
+                          ) : (
+                            'No Chat'
+                          )}
                         </TableCell>
 
                         {/* <TableCell align="right">
