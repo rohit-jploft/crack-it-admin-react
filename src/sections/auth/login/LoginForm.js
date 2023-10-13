@@ -34,20 +34,26 @@ export default function LoginForm() {
       const res = await Axios.post(`${BASE_URL}auth/user/login`, {
         email: formik.values.email,
         password: formik.values.password,
-        role: 'ADMIN',
       });
       console.log(res?.data, 'response login');
       if (res?.data && res.data?.data?.token) {
-        localStorage.setItem('token', res.data.data.token);
-        localStorage.setItem('userId', res.data.data.user._id);
-
-        toast.success(res.data.message, {
-          onClose: () => {
-            navigate('/dashboard', { replace: true });
-          },
-          autoClose: 500,
-        });
-        setCreated(false);
+        if(res.data.data.user.role === "ADMIN" || res.data.data.user.role ==="SUPER_ADMIN"){
+          localStorage.setItem('token', res.data.data.token);
+          localStorage.setItem('userId', res.data.data.user._id);
+          localStorage.setItem('role', res.data.data.user.role);
+  
+          toast.success(res.data.message, {
+            onClose: () => {
+              navigate('/dashboard', { replace: true });
+            },
+            autoClose: 500,
+          });
+          setCreated(false);
+        } else {
+          toast.error("User not found");
+          setCreated(false);
+        }
+      
       }
       if (res?.data && res?.data?.type === 'error') {
         toast(res.data.message, { type: 'error' });
@@ -55,24 +61,7 @@ export default function LoginForm() {
       }
     },
   });
-  // const handleClick = async () => {
-  //   const res = await Axios.post(`${BASE_URL}auth/user/login`, { email, password });
 
-  //   if (res.status === 200) {
-  //     toast('Login Successfull', { type: 'success' });
-  //     localStorage.setItem('token', res.data.data.token);
-  //     navigate('/dashboard', { replace: true });
-  //   }
-  // };
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (name === 'email') {
-  //     setEmail(value);
-  //   }
-  //   if (name === 'password') {
-  //     setPassword(value);
-  //   }
-  // };
 
   return (
     <>

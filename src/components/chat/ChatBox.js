@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { scrollToBottom } from '../../utils/helper';
 import FileInputIcon from '../FileInputIcon';
+import { BASE_URL } from '../../constant';
 // import VoiceMessage from '../VoiceMessage';
 const ChatBox = ({ messages, onSendMessage, selectedConvoId, setFile, file }) => {
   const [newMessage, setNewMessage] = useState('');
@@ -41,9 +42,16 @@ const ChatBox = ({ messages, onSendMessage, selectedConvoId, setFile, file }) =>
                 )}
                 {/* <b>{message.sender._id !== userId && message.sender.firstName}</b> */}
               </div>
-              <div className="message-text" style={{ marginLeft: '7px' }}>
-                {message.content}
-              </div>
+              {/* {message?.type === 'file' ? (
+                <audio controls>
+                  <source src={`${BASE_URL}${message?.media}`} type="audio/mpeg" />
+                  <track label="English" kind="subtitles" srcLang="en" default />
+                </audio>
+              ) : ( */}
+                <div className="message-text" style={{ marginLeft: '7px' }}>
+                  {message.content}
+                </div>
+              {/* )} */}
               {/* <span>{message.createdAt}</span> */}
             </div>
           );
@@ -51,7 +59,7 @@ const ChatBox = ({ messages, onSendMessage, selectedConvoId, setFile, file }) =>
       </div>
       <div className="message-input">
         {/* <div> */}
-          {/* {file && (
+        {/* {file && (
             <>
               <span>{file.name}</span>
               <IconButton onClick={() => setFile({})}>
@@ -60,16 +68,16 @@ const ChatBox = ({ messages, onSendMessage, selectedConvoId, setFile, file }) =>
             </>
           )} */}
 
-          <TextField
-            type="text"
-            className="chat-input"
-            placeholder="Type your message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') handleSendMessage();
-            }}
-          />
+        <TextField
+          type="text"
+          className="chat-input"
+          placeholder="Type your message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleSendMessage();
+          }}
+        />
         {/* </div> */}
 
         <FileInputIcon file={file} setFile={setFile} />

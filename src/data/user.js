@@ -22,6 +22,17 @@ export const createUser = async (data, dailCode, isAdmin) => {
     return error;
   }
 };
+export const createNewAgency = async (data, dailCode) => {
+  const body = { ...data, countryCode: `+${dailCode}` };
+  body.role = "AGENCY"
+
+  try {
+    const createUser = await Axios.post(`${BASE_URL}auth/agency/signup`, body);
+    return createUser.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const isAdmin = async () => {
   const token = localStorage.getItem('token');
   if (token) {

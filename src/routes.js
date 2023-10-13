@@ -14,6 +14,9 @@ import Payments from './pages/Payments';
 import Admins from './pages/Admins';
 import ChangePassword from './pages/ChangePassword';
 import { isAdmin } from './data/user';
+import WithDrawalRequest from './pages/WithdrawalReq';
+import PromoCodes from './pages/PromoCodes';
+import Agencies from './pages/Agencies';
 
 function AppRoutes() {
   const isAuthenticateds = isAuthenticated();
@@ -32,6 +35,7 @@ function AppRoutes() {
         { path: 'user/:userType', element: isAuthenticateds ? <UserPage /> : <Navigate to="/login" /> },
         { path: 'user', element: isAuthenticateds ? <UserPage /> : <Navigate to="/login" /> },
         { path: 'admin', element: isAuthenticateds ? <Admins /> : <Navigate to="/login" /> },
+        { path: 'agencies', element: isAuthenticateds ? <Agencies /> : <Navigate to="/login" /> },
         { path: 'meetings/:type', element: isAuthenticateds ? <MeetingsPage /> : <Navigate to="/login" /> },
         { path: 'meetings', element: isAuthenticateds ? <MeetingsPage /> : <Navigate to="/login" /> },
         {
@@ -42,10 +46,18 @@ function AppRoutes() {
           path: 'categories/:categoryId',
           element: isAuthenticateds ? <Categories /> : <Navigate to="/login" />,
         },
+        {
+          path: 'promoCodes',
+          element: isAuthenticateds ? <PromoCodes /> : <Navigate to="/login" />,
+        },
 
         {
           path: 'payments',
           element: isAuthenticateds ? isadmin ? <Payments /> : <Page404 /> : <Navigate to="/login" />,
+        },
+        {
+          path: 'withdrawal-request',
+          element: isAuthenticateds ? isadmin ? <WithDrawalRequest /> : <Page404 /> : <Navigate to="/login" />,
         },
         {
           path: 'payments/:paymentStatus',
@@ -53,6 +65,10 @@ function AppRoutes() {
         },
         {
           path: 'chat',
+          element: isAuthenticateds ? <Chat /> : <Navigate to="/login" />,
+        },
+        {
+          path: 'chat/:selectConvo',
           element: isAuthenticateds ? <Chat /> : <Navigate to="/login" />,
         },
         {

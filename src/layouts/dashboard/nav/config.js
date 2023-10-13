@@ -2,6 +2,8 @@
 
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import DiscountIcon from '@mui/icons-material/Discount';
+
 import CategoryIcon from '@mui/icons-material/Category';
 import PaidIcon from '@mui/icons-material/Paid';
 import { CropRotateSharp } from '@mui/icons-material';
@@ -30,6 +32,11 @@ const navConfig = [
     icon: <AdminPanelSettingsIcon/>,
   },
   {
+    title: 'Agencies',
+    path: '/dashboard/agencies',
+    icon: <AdminPanelSettingsIcon/>,
+  },
+  {
     title: 'Meetings',
     path: '/dashboard/meetings',
     icon: <SupervisorAccountIcon/>,
@@ -39,10 +46,20 @@ const navConfig = [
     path: '/dashboard/categories',
     icon: <CategoryIcon/>,
   },
+  {
+    title: 'PromoCodes',
+    path: '/dashboard/promoCodes',
+    icon: <DiscountIcon/>,
+  },
  
   {
     title: 'Payments',
     path: '/dashboard/payments',
+    icon:<PaidIcon/>,
+  },
+  {
+    title: 'WithDrawal Request',
+    path: '/dashboard/withdrawal-request',
     icon:<PaidIcon/>,
   },
   {

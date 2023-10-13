@@ -3,6 +3,8 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { io } from 'socket.io-client';
 import { Helmet } from 'react-helmet-async';
+import { useParams } from 'react-router-dom';
+
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import ConversationList from '../components/chat/ConversationList';
@@ -14,7 +16,8 @@ import { BASE_URL } from '../constant';
 import Socket from '../data/socket';
 
 const ChatPage = () => {
-  const [selectedConversation, setSelectedConversation] = useState(null);
+    const {selectConvo} = useParams()
+  const [selectedConversation, setSelectedConversation] = useState(selectConvo ||  null);
   const [convoData, setConvoData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -93,6 +96,7 @@ const ChatPage = () => {
     if (file) newMessage.audio = file;
     const sentMsg = await sendMessage(selectedConversation, messageText, file || '')
       .then((res) => {
+        console.log(res)
         setMessages([...messages, newMessage]);
         // const res =
         Socket.emit('sendMessage', {

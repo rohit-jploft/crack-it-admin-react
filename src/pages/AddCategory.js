@@ -17,7 +17,7 @@ import { makeStyles } from '@mui/styles';
 import { ErrorMessage, useFormik } from 'formik';
 import { useParams } from 'react-router-dom';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createUser } from '../data/user';
@@ -54,6 +54,7 @@ export default function AddCategory(props) {
   const { categoryId } = useParams();
   const classes = useStyles();
   const [created, setCreated] = useState(false);
+  const [image, setImage] = useState();
   const initialTitle = props.edit.title ? props.edit.title : '';
   console.log(props.edit, 'edit cate');
   const formik = useFormik({
@@ -86,7 +87,14 @@ export default function AddCategory(props) {
       props.editDone(true)
     },
   });
+  const fileInputRef = useRef(null);
 
+
+
+  const handleIconClick = () => {
+    // Trigger the file input when the icon is clicked
+    fileInputRef.current.click();
+  };
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -111,6 +119,22 @@ export default function AddCategory(props) {
                 value={formik.values.title}
                 error={formik.touched.title && Boolean(formik.errors.title)}
                 helperText={formik.touched.title && formik.errors.title}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                name="image"
+                // label="Image"
+                type="file"
+                ref={fileInputRef}
+                onClick={handleIconClick}
+                fullWidth
+                id="image"
+                {...formik.getFieldProps('image')}
+                onChange={(e) => setImage(e.target.files[0])}
+                value={image}
+                error={!image}
+                helperText={!image && "Image is required"}
               />
             </Grid>
           </Grid>

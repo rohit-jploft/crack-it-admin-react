@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // @mui
 import {
   Card,
@@ -25,17 +25,19 @@ import {
 } from '@mui/material';
 // components
 import ChatIcon from '@mui/icons-material/Chat';
+import { ToastContainer, toast } from 'react-toastify';
+
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
+import 'react-toastify/dist/ReactToastify.css';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
 import USERLIST, { getUsers } from '../data/user';
-import { getAllMeeting } from '../data/meetings';
+import { enterChatAdmin, getAllMeeting } from '../data/meetings';
 import { getTimeFromTimestamps, getDateFromTimeStamps } from '../utils/helper';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
-
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -82,6 +84,7 @@ function applySortFilter(array, comparator, query) {
 
 export default function MeetingsPage() {
   const { type } = useParams();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -167,9 +170,19 @@ export default function MeetingsPage() {
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  const enterChat = async (meetingId) => {
+    const res = await enterChatAdmin(meetingId);
+    console.log(res);
+    if (res && res.data && res.data.chat) {
+      navigate(`dashboard/chat/${res.data.chat}`);
+    }
+    if (res && res.status === 200 && res.message) {
+      toast.success(res.message);
+    }
+  };
   return (
     <>
+      <ToastContainer />
       <Helmet>
         <title> User</title>
       </Helmet>
@@ -188,7 +201,9 @@ export default function MeetingsPage() {
               { value: '', label: 'All' },
               { value: 'REQUESTED', label: 'Requested' },
               { value: 'ACCEPTED', label: 'Accepted' },
-              { value: 'REJECTED', label: 'Rejected' },
+              { value: 'DECLINED', label: 'Declined' },
+              { value: 'CONFIRMED', label: 'Confirmed' },
+              { value: 'COMPLETED', label: 'Completed' },
               { value: 'CANCELLED', label: 'Cancelled' },
             ]}
             value={status}
@@ -200,7 +215,7 @@ export default function MeetingsPage() {
           {/* <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} /> */}
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800}}>
+            <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -212,7 +227,7 @@ export default function MeetingsPage() {
                   // onSelectAllClick={handleSelectAllClick}
                 />
 
-                <TableBody className="table-bodys" sx={{  maxHeight: '400px' ,overflow: 'auto'}}>
+                <TableBody className="table-bodys" sx={{ maxHeight: '400px', overflow: 'auto' }}>
                   {meetingsData?.map((row) => {
                     const { _id, jobCategory, user, expert, date, startTime, endTime, status } = row;
                     const selectedUser = selected.indexOf(_id) !== -1;
@@ -249,11 +264,11 @@ export default function MeetingsPage() {
                         <TableCell align="left">{getTimeFromTimestamps(endTime.toString())}</TableCell>
 
                         <TableCell align="left">
-                          <Label color={status === 'ACCEPTED' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
+                          <Label color={status === 'CONFIRMED' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
                         </TableCell>
                         <TableCell align="left">
-                          {status === 'ACCEPTED' ? (
-                            <IconButton>
+                          {status === 'CONFIRMED' ? (
+                            <IconButton onClick={() => enterChat(_id)}>
                               <ChatIcon />
                             </IconButton>
                           ) : (

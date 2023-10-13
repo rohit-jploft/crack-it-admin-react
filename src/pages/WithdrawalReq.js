@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 // @mui
 import {
   Card,
@@ -21,38 +22,36 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
-  Grid,
-} from '@mui/material';
-import { useParams } from 'react-router-dom';
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  CardContent,
 
-import { AppWidgetSummary } from '../sections/@dashboard/app';
+} from '@mui/material';
 // components
+import ChatIcon from '@mui/icons-material/Chat';
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import { getBookingPayments, getBookingPaymentsStats } from '../data/payments';
-
-import USERLIST, { getUsers, isAdmin } from '../data/user';
+import USERLIST, { getUsers } from '../data/user';
 import { getAllMeeting } from '../data/meetings';
-import { getTimeFromTimestamps, getDateFromTimeStamps, formatEarnings } from '../utils/helper';
+import { getTimeFromTimestamps, getDateFromTimeStamps } from '../utils/helper';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
-import Commission from './Commission';
+import { getAllWithDrawal } from '../data/withdrawReq';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'expert', label: 'Expert', alignRight: false },
-  { id: 'user', label: 'User', alignRight: false },
-  { id: 'duration', label: 'Duration', alignRight: false },
-  { id: 'Date', label: 'Date', alignRight: false },
-  { id: 'totalAmount', label: 'TotalAmount', alignRight: false },
-  { id: 'commission', label: 'Commission', alignRight: false },
-  { id: 'grandTotal', label: 'Grand Total' },
-  { id: 'status', label: 'Status' },
+  { id: 'name', label: 'Name', alignRight: false },
+  { id: 'role', label: 'Role', alignRight: false },
+  { id: 'amount', label: 'Amount', alignRight: false },
+  { id: 'createdAt', label: 'CreatetAt', alignRight: false },
+  { id: 'status', label: 'Status', alignRight: false },
+  { id: 'actions', label: 'Action', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -86,8 +85,8 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Payments() {
-  const {paymentStatus} = useParams()
+export default function WithDrawalRequest() {
+  const { type } = useParams();
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -102,27 +101,17 @@ export default function Payments() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [paymentsData, setPaymentsData] = useState([]);
-  const [paymentStats, setPaymentStats] = useState();
-  // pre status
-  const preStatus = paymentStatus || ''
+  const [withdrawreqsData, setWithdrawReqsData] = useState([]);
+  const preStatus = type || '';
   const [status, setStatus] = useState(preStatus);
   const [totalCount, setTotalCount] = useState();
-  const [showCommissionModel, setCommissionModel] = useState();
+  const [bankData, setBankData] = useState()
 
   useEffect(() => {
     (async () => {
-      const stats = await getBookingPaymentsStats();
-      console.log(stats, 'stats');
-      setPaymentStats(stats);
-    })();
-  }, []);
-  useEffect(() => {
-    (async () => {
-      const payments = await getBookingPayments(status, rowsPerPage, page);
-      console.log(payments, 'payments');
-      setTotalCount(payments.pagination.totalCount);
-      setPaymentsData(payments.data);
+      const withdrawal = await getAllWithDrawal(status, page, rowsPerPage);
+      setTotalCount(withdrawal.pagination.totalCount);
+      setWithdrawReqsData(withdrawal.data);
     })();
   }, [status, rowsPerPage, page]);
 
@@ -187,73 +176,24 @@ export default function Payments() {
   return (
     <>
       <Helmet>
-        <title> Payments </title>
+        <title> User</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Payments
+            WithDrawal Request
           </Typography>
         </Stack>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary
-              isEarning
-              title="Total Revenue"
-              total={formatEarnings(paymentStats?.totalRevenue)}
-              icon={'ant-design:android-filled'}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary
-              isEarning
-              title="Received Commission"
-              total={formatEarnings(paymentStats?.realizedCommission)}
-              color="info"
-              icon={'ant-design:apple-filled'}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary
-              isEarning
-              title="Pending Commission"
-              total={formatEarnings(paymentStats?.unrealizedCommission)}
-              color="warning"
-              icon={'ant-design:windows-filled'}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary
-              isEarning
-              title="Total Earning"
-              total={formatEarnings(paymentStats?.totalEarning)}
-              color="error"
-              icon={'ant-design:Money-Collect-Filled'}
-            />
-          </Grid>
-        </Grid>
-        {/* </Stack> */}
-        <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: '20px' }}>
+        <Stack mb={5} direction="row" alignItems="center" justifyContent="flex-end">
           {/* <BlogPostsSearch posts={[]} /> */}
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => {
-              setCommissionModel(true);
-            }}
-          >
-            Set Commission
-          </Button>
-          <Commission open={showCommissionModel} setOpen={(value) => setCommissionModel(value)}/>
+
           <MeetingSortByStatus
             options={[
               { value: '', label: 'All' },
-              { value: 'PAID', label: 'Paid' },
-              { value: 'UNPAID', label: 'Unpaid' },
+              { value: 'Approved', label: 'Approved' },
+              { value: 'Pending', label: 'Pending' },
+              { value: 'Rejected', label: 'Rejected' },
             ]}
             value={status}
             onSort={(e) => setStatus(e.target.value)}
@@ -276,13 +216,12 @@ export default function Payments() {
                   // onSelectAllClick={handleSelectAllClick}
                 />
 
-                <TableBody className="table-bodys">
-                  {paymentsData?.map((row) => {
-                    const { _id, booking, totalAmount, grandTotal, CommissionAmount, status } = row;
-                    const selectedUser = selected.indexOf(_id) !== -1;
+                <TableBody className="table-bodys" sx={{ maxHeight: '400px', overflow: 'auto' }}>
+                  {withdrawreqsData?.map((row) => {
+                    const { amount, user, createdAt, status, _id, bank } = row;
 
                     return (
-                      <TableRow hover key={_id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={_id} tabIndex={-1} role="checkbox">
                         {/* <TableCell padding="checkbox">
                           <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, firstName)} />
                         </TableCell> */}
@@ -291,29 +230,32 @@ export default function Payments() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {booking?.expert?.firstName}
+                              {user.firstName} {user?.lastName}
                             </Typography>
                           </Stack>
                         </TableCell>
 
+                        <TableCell align="left">{user?.role}</TableCell>
+                        <TableCell align="left">{amount}</TableCell>
+
+                        <TableCell align="left">{getDateFromTimeStamps(createdAt)}</TableCell>
+                        {/* <TableCell align="left">{getTimeFromTimestamps(startTime.toString())}</TableCell>
+                        <TableCell align="left">{getTimeFromTimestamps(endTime.toString())}</TableCell> */}
+
                         <TableCell align="left">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            {/* <Avatar /> */}
-                            <Typography variant="subtitle2" noWrap>
-                              {booking?.user?.firstName}
-                            </Typography>
-                          </Stack>
+                          <Label color={status === 'Approved' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
                         </TableCell>
-
-                        <TableCell align="left">{booking.duration} Min </TableCell>
-
-                        <TableCell align="left">{getDateFromTimeStamps(booking.date.toString())}</TableCell>
-                        <TableCell align="left">${totalAmount}</TableCell>
-                        <TableCell align="left">${CommissionAmount}</TableCell>
-                        <TableCell align="left">${grandTotal}</TableCell>
-
                         <TableCell align="left">
-                          <Label color={status === 'PAID' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
+                          <Button
+                            className="add-proty-mn"
+                            variant="contained"
+                            onClick={() => {
+                                setBankData(bank)
+                                setOpen(true)
+                            }}
+                          >
+                            See Bank detail
+                          </Button>
                         </TableCell>
 
                         {/* <TableCell align="right">
@@ -331,7 +273,7 @@ export default function Payments() {
                   )}
                 </TableBody>
 
-                {paymentsData.length === 0 && (
+                {withdrawreqsData.length === 0 && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -340,13 +282,14 @@ export default function Payments() {
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" paragraph>
+                          {/* <Typography variant="h6" paragraph>
                             Not found
-                          </Typography>
+                          </Typography> */}
 
                           <Typography variant="body2">
-                            No results found 
-                            {/* <strong>&quot;{filterName}&quot;</strong>. */}
+                            No results found
+                            {/* <strong>&quot;{filterName}&quot;</strong>.
+                            <br /> Try checking for typos or using complete words. */}
                           </Typography>
                         </Paper>
                       </TableCell>
@@ -369,34 +312,37 @@ export default function Payments() {
         </Card>
       </Container>
 
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        {/* <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem> */}
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Cancel
-        </MenuItem>
-      </Popover>
+      <Dialog open={open}>
+        <DialogTitle>Bank Deatils Of Withraw request</DialogTitle>
+        <DialogContent>
+          <CardContent >
+            {/* <Typography variant="h6" component="div">
+              {bankData?.type}
+            </Typography> */}
+            <Stack>
+              {bankData?.type === 'UPI'  && <Typography variant="h6" color="text.secondary">
+                <b>UPI ID</b> : {bankData?.upiId}
+              </Typography>}
+              {bankData?.type === 'BANK' && <Typography variant="h6" color="text.secondary">
+                <b>Bank Name</b> : {bankData?.bankName} <br/>
+                <b>Account Name</b> : {bankData?.accountName} <br/>
+                <b>Account No</b> : {bankData?.accountNo} <br/>
+                <b>IFSC Code</b> : {bankData?.ifscCode}
+              </Typography>}
+              {/* {<Typography variant="h6" color="text.secondary">
+                <b>Amount</b>:
+              </Typography>} */}
+            </Stack>
+           
+          </CardContent>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMenu}>Close</Button>
+          <Button variant="contained" onClick={handleCloseMenu}>
+            Paid
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -55,7 +55,7 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
       ) : (
         <StyledSearch
           value={filterName}
-          onChange={onFilterName}
+          onChange={(e) => onFilterName(e.target.value) }
           placeholder="Search"
           sx={{height:40}}
           startAdornment={

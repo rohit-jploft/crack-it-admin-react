@@ -11,3 +11,11 @@ export const getBookingPaymentsStats = async () => {
   const res = await Axios.get(`${BASE_URL}admin/payments/stats`);
   return res.data.data;
 };
+export const getAllWithDrawalReq = async () => {
+  try {
+    const res = await Axios.get(`${BASE_URL}wallet/withdrawal/get/all`);
+    return res.data.data;
+  } catch (error) {
+    return error.message
+  }
+}
