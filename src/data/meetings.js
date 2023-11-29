@@ -21,3 +21,11 @@ export const enterChatAdmin = async (meetingId) => {
   );
   return meetingData.data;
 };
+export const getSingleBookingDetail = async (bookingId) => {
+  try {
+    const res = await Axios.get(`${BASE_URL}booking/single/${bookingId}`);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

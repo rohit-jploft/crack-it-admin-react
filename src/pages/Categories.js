@@ -42,11 +42,23 @@ import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blo
 import { deleteCategory, getCategories } from '../data/categories';
 import AddCategory from './AddCategory';
 import DeleteAlert from '../components/DeleteAlert';
+import { BASE_URL } from '../constant';
+import NoPhoto from '../images/noPhoto.jpg';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title', alignRight: false },
+  { id: 'image', label: 'Image', alignRight: false },
+  { id: 'createdAt', label: 'CreatedAt', alignRight: false },
+  { id: 'updatedAt', label: 'UpdatedAt', alignRight: false },
+  { id: 'Categories', label: 'Categories', alignRight: false },
+  { id: 'edit', label: 'Edit', alignRight: false },
+  { id: 'delete', label: 'Delete', alignRight: false },
+];
+const TABLE_HEAD_WITHOUT_IMAGE = [
+  { id: 'title', label: 'Title', alignRight: false },
+  { id: 'parent', label: 'Parent', alignRight: false },
   { id: 'createdAt', label: 'CreatedAt', alignRight: false },
   { id: 'updatedAt', label: 'UpdatedAt', alignRight: false },
   { id: 'Categories', label: 'Categories', alignRight: false },
@@ -115,7 +127,9 @@ export default function Categories() {
   const [editCategory, setEditCategory] = useState({});
   const [parentCategory, setParentCategory] = useState('');
   const [totalCount, setTotalCount] = useState();
+  const [isParentExist, setParentExist] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState('');
+  const [showButtonCount, setShowButtonCount] = useState(0);
   useEffect(() => {
     (async () => {
       setIsDeleted(false);
@@ -126,6 +140,11 @@ export default function Categories() {
       console.log(categories, 'categories');
       setTotalCount(categories.pagination.totalCount);
       setCategoriesData(categories.data);
+      if (categories.data && categories.data[0].parent.title) {
+        setParentExist(true);
+      } else {
+        setParentExist(false);
+      }
     })();
   }, [search, isDeleted, showCatClicked, created, categoryId, editDone, rowsPerPage, page]);
   useEffect(() => {
@@ -199,13 +218,12 @@ export default function Categories() {
         autoClose: 400,
         onClose: () => {
           setIsDeleted(true);
-          setSelectedDeleteId('')
+          setSelectedDeleteId('');
         },
       });
     }
     setIsDeleted(false);
-    setSelectedDeleteId('')
-   
+    setSelectedDeleteId('');
   };
 
   return (
@@ -215,9 +233,26 @@ export default function Categories() {
       </Helmet>
       <ToastContainer />
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} sx={{ marginBottom: -0.03, marginLeft: '30px', marginRight: '30px' }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={5}
+          sx={{ marginBottom: -0.03, marginLeft: '30px', marginRight: '30px' }}
+        >
           <Typography variant="h4" gutterBottom>
-            {newCategoryClicked ? (editCategory.id ? 'Edit category' : ' Add Category') : 'Categories'}
+            {/* {newCategoryClicked
+              ? editCategory.id
+                ? 'Edit category'
+                : ' Add Category'
+              : categoryId
+              ? parentCategory === categoryId
+                ? 'Sub category'
+                : 'skills'
+              : 'Categories'} */}
+            {showButtonCount === 0 && 'Categories'}
+            {showButtonCount === 1 && 'Sub Categories'}
+            {showButtonCount === 2 && 'Skills'}
           </Typography>
           {newCategoryClicked && (
             <Icon
@@ -230,17 +265,23 @@ export default function Categories() {
               <CloseIcon />
             </Icon>
           )}
-          
         </Stack>
         {!newCategoryClicked && (
-          <Stack mb={5} direction="row" alignItems="center" justifyContent={categoryId ? 'space-between' : 'space-between'}  sx={{
-            marginBottom: -0.06,
-          }}>
+          <Stack
+            mb={5}
+            direction="row"
+            alignItems="center"
+            justifyContent={categoryId ? 'space-between' : 'space-between'}
+            sx={{
+              marginBottom: -0.06,
+            }}
+          >
             {/* <BlogPostsSearch posts={[]} /> */}
             {categoryId && (
               <Button
                 style={{ color: 'black' }}
                 onClick={() => {
+                  setShowButtonCount(0);
                   navigate('/dashboard/categories');
                   // window.location.reload();
                 }}
@@ -249,19 +290,26 @@ export default function Categories() {
                 Main Page
               </Button>
             )}
-            <UserListToolbar numSelected={selected.length} filterName={search} onFilterName={handleFilterByName} />
+            <UserListToolbar
+              numSelected={selected.length}
+              filterName={search}
+              onFilterName={(value) => setSearch(value)}
+            />
             {!newCategoryClicked && (
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => {
-                setNewCategoryClicked(true);
-                setEditCategory({});
-              }}
-            >
-              Add Category
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                startIcon={<Iconify icon="eva:plus-fill" />}
+                onClick={() => {
+                  setNewCategoryClicked(true);
+                  setEditCategory({});
+                }}
+              >
+                {showButtonCount === 0 && 'Add Category'}
+                {showButtonCount === 1 && 'Add Sub Category'}
+                {showButtonCount === 2 && 'Add Skills'}
+                {/* {categoryId ? (parentCategory === categoryId ? 'Add Job role' : 'Add Skills') : 'Add Category'} */}
+              </Button>
+            )}
           </Stack>
         )}{' '}
         {!newCategoryClicked && (
@@ -274,16 +322,16 @@ export default function Categories() {
                   <UserListHead
                     order={order}
                     orderBy={orderBy}
-                    headLabel={TABLE_HEAD}
+                    headLabel={!categoryId ? TABLE_HEAD : TABLE_HEAD_WITHOUT_IMAGE}
                     rowCount={categoriesData.length}
                     numSelected={selected.length}
                     onRequestSort={handleRequestSort}
                     // onSelectAllClick={handleSelectAllClick}
                   />
 
-                  <TableBody className='table-bodys'>
+                  <TableBody className="table-bodys">
                     {categoriesData?.map((row) => {
-                      const { _id, title, createdAt, updatedAt } = row;
+                      const { _id, title, createdAt, updatedAt, image } = row;
                       const selectedUser = selected.indexOf(_id) !== -1;
 
                       return (
@@ -293,7 +341,7 @@ export default function Categories() {
                           <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, firstName)} />
                         </TableCell> */}
 
-                            <TableCell component="th" scope="row" padding="none" className='row-data'>
+                            <TableCell component="th" scope="row" padding="none" className="row-data">
                               <Stack direction="row" alignItems="center" spacing={2}>
                                 <Avatar />
                                 <Typography variant="subtitle2" noWrap>
@@ -302,6 +350,16 @@ export default function Categories() {
                               </Stack>
                             </TableCell>
 
+                            {!categoryId && (
+                              <TableCell align="left">
+                                <img
+                                  src={image ? `${BASE_URL}${image}` : NoPhoto}
+                                  alt="category-logo"
+                                  style={{ height: '70px', width: '100px' }}
+                                />
+                              </TableCell>
+                            )}
+                            {categoryId && <TableCell align="left">{row?.parent?.title}</TableCell>}
                             <TableCell align="left">{getDateFromTimeStamps(createdAt.toString())}</TableCell>
 
                             <TableCell align="left">{getDateFromTimeStamps(updatedAt.toString())}</TableCell>
@@ -311,14 +369,18 @@ export default function Categories() {
                         <TableCell align="left">{getTimeFromTimestamps(endTime.toString())}</TableCell> */}
 
                             <TableCell align="left">
-                              <Button
-                                onClick={() => {
-                                  setShowCatClicked(false);
-                                  navigate(`/dashboard/categories/${_id}`);
-                                }}
-                              >
-                                Show Categories
-                              </Button>
+                              {showButtonCount < 2 && (
+                                <Button
+                                  onClick={() => {
+                                    setShowButtonCount(showButtonCount + 1);
+                                    setShowCatClicked(false);
+                                    navigate(`/dashboard/categories/${_id}`);
+                                  }}
+                                >
+                                  {showButtonCount === 0 && 'Show Sub Categories'}
+                                  {showButtonCount === 1 && 'Show Skills'}
+                                </Button>
+                              )}
                             </TableCell>
 
                             {/* <TableCell align="right">
@@ -335,7 +397,7 @@ export default function Categories() {
                                   setNewCategoryClicked(true);
                                 }}
                               >
-                                <Iconify icon={'eva:edit-fill'}  />
+                                <Iconify icon={'eva:edit-fill'} />
                               </IconButton>
                             </TableCell>
                             <TableCell align="left">
@@ -347,7 +409,7 @@ export default function Categories() {
                                   setSelectedDeleteId(_id);
                                 }}
                               >
-                                <Iconify icon={'eva:trash-2-outline'}  />
+                                <Iconify icon={'eva:trash-2-outline'} />
                               </IconButton>
                             </TableCell>
                           </TableRow>
@@ -383,7 +445,7 @@ export default function Categories() {
                             </Typography> */}
 
                             <Typography variant="body2">
-                              No results found 
+                              No results found
                               {/* <strong>&quot;{filterName}&quot;</strong>.
                               <br /> Try checking for typos or using complete words. */}
                             </Typography>
@@ -414,6 +476,7 @@ export default function Categories() {
             editDone={(value) => setEditDone(value)}
             close={(value) => setNewCategoryClicked(value)}
             isDone={(value) => setCreated(value)}
+            showFilePicker={!categoryId}
           />
         )}
       </Container>

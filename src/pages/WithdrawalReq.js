@@ -27,10 +27,12 @@ import {
   DialogTitle,
   DialogContent,
   CardContent,
-
 } from '@mui/material';
 // components
 import ChatIcon from '@mui/icons-material/Chat';
+import { ToastContainer, toast } from 'react-toastify';
+import Axios from 'axios';
+
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
@@ -42,6 +44,7 @@ import { getAllMeeting } from '../data/meetings';
 import { getTimeFromTimestamps, getDateFromTimeStamps } from '../utils/helper';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
 import { getAllWithDrawal } from '../data/withdrawReq';
+import { BASE_URL } from '../constant';
 
 // ----------------------------------------------------------------------
 
@@ -105,15 +108,19 @@ export default function WithDrawalRequest() {
   const preStatus = type || '';
   const [status, setStatus] = useState(preStatus);
   const [totalCount, setTotalCount] = useState();
-  const [bankData, setBankData] = useState()
+  const [bankData, setBankData] = useState();
+  const [selectedId, setSelectedId] = useState();
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     (async () => {
       const withdrawal = await getAllWithDrawal(status, page, rowsPerPage);
       setTotalCount(withdrawal.pagination.totalCount);
+      setIsDone(false)
+
       setWithdrawReqsData(withdrawal.data);
     })();
-  }, [status, rowsPerPage, page]);
+  }, [status, rowsPerPage, page, isDone]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -173,8 +180,19 @@ export default function WithDrawalRequest() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+  const marketPaymentAsPaid = async (id) => {
+    try {
+      const res = await Axios.put(`${BASE_URL}wallet/withdrawal/update/status/${id}`, { status: 'Approved' });
+      setIsDone(true)
+      console.log(res);
+    } catch (error) {
+       toast(error.message);
+    }
+  };
+
   return (
     <>
+    <ToastContainer/>
       <Helmet>
         <title> User</title>
       </Helmet>
@@ -230,7 +248,7 @@ export default function WithDrawalRequest() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {user.firstName} {user?.lastName}
+                              {user?.firstName} {user?.lastName}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -250,8 +268,9 @@ export default function WithDrawalRequest() {
                             className="add-proty-mn"
                             variant="contained"
                             onClick={() => {
-                                setBankData(bank)
-                                setOpen(true)
+                              setBankData(bank);
+                              setOpen(true);
+                              setSelectedId(_id)
                             }}
                           >
                             See Bank detail
@@ -315,30 +334,38 @@ export default function WithDrawalRequest() {
       <Dialog open={open}>
         <DialogTitle>Bank Deatils Of Withraw request</DialogTitle>
         <DialogContent>
-          <CardContent >
+          <CardContent>
             {/* <Typography variant="h6" component="div">
               {bankData?.type}
             </Typography> */}
             <Stack>
-              {bankData?.type === 'UPI'  && <Typography variant="h6" color="text.secondary">
-                <b>UPI ID</b> : {bankData?.upiId}
-              </Typography>}
-              {bankData?.type === 'BANK' && <Typography variant="h6" color="text.secondary">
-                <b>Bank Name</b> : {bankData?.bankName} <br/>
-                <b>Account Name</b> : {bankData?.accountName} <br/>
-                <b>Account No</b> : {bankData?.accountNo} <br/>
-                <b>IFSC Code</b> : {bankData?.ifscCode}
-              </Typography>}
+              {bankData?.type === 'UPI' && (
+                <Typography variant="h6" color="text.secondary">
+                  <b>UPI ID</b> : {bankData?.upiId}
+                </Typography>
+              )}
+              {bankData?.type === 'BANK' && (
+                <Typography variant="h6" color="text.secondary">
+                  <b>Bank Name</b> : {bankData?.bankName} <br />
+                  <b>Account Name</b> : {bankData?.accountName} <br />
+                  <b>Account No</b> : {bankData?.accountNo} <br />
+                  <b>IFSC Code</b> : {bankData?.ifscCode}
+                </Typography>
+              )}
               {/* {<Typography variant="h6" color="text.secondary">
                 <b>Amount</b>:
               </Typography>} */}
             </Stack>
-           
           </CardContent>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseMenu}>Close</Button>
-          <Button variant="contained" onClick={handleCloseMenu}>
+          <Button variant="contained" onClick={async() => {
+            handleCloseMenu()
+            await marketPaymentAsPaid(selectedId)
+            setIsDone(true)
+
+          }}>
             Paid
           </Button>
         </DialogActions>

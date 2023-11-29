@@ -38,6 +38,7 @@ import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blo
 import SignUp from './SignUpPage';
 import DeleteAlert from '../components/DeleteAlert';
 import SignUpAgency from './SignUpAgency';
+import ShowAgencyProfileDailog from '../components/ShowAgencyProfileDialog';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -45,6 +46,7 @@ const TABLE_HEAD = [
   { id: 'role', label: 'Role', alignRight: false },
   { id: 'phone', label: 'Phone', alignRight: false },
   { id: 'isDeleted', label: 'Account Status', alignRight: false },
+  { id: 'isAgencyVerified', label: 'Agency Verfied', alignRight: false },
   { id: 'action', label: 'Action' },
 ];
 
@@ -95,6 +97,12 @@ export default function Agencies() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  // show profile states
+  const [clickedRole, setClickedRole] = useState();
+  const [isExprofileVerified, setIsExProfileVerified] = useState(false);
+  const [showProfileDialog, setShowProfileDailog] = useState(false);
+
+  // end show profile states
   const [usersData, setUsersData] = useState([]);
   const [role, setRole] = useState('');
   const [search, setSearch] = useState('');
@@ -124,10 +132,12 @@ export default function Agencies() {
     }
     setSuspendDone(false);
   };
-  const handleOpenMenu = (event, id, isDeleted) => {
+  const handleOpenMenu = (event, id, isDeleted,role, verified) => {
     setOpen(event.currentTarget);
     setSuspenId(id);
     setSelectedUserSuspended(isDeleted);
+    setClickedRole(role);
+    setIsExProfileVerified(verified);
   };
 
   const handleCloseMenu = () => {
@@ -243,7 +253,7 @@ export default function Agencies() {
                   />
                   <TableBody className="table-bodys">
                     {usersData?.map((row) => {
-                      const { _id, agencyName, role, email, phone, isDeleted } = row;
+                      const { _id, agencyName, role, email, phone, isDeleted, isExpertProfileVerified } = row;
                       const selectedUser = selected.indexOf(agencyName) !== -1;
 
                       return (
@@ -273,6 +283,11 @@ export default function Agencies() {
                                 {sentenceCase(isDeleted ? 'Inactive' : 'active')}
                               </Label>
                             </TableCell>
+                            <TableCell align="left">
+                              <Label color={isExpertProfileVerified ? 'success' : 'warning'}>
+                                {sentenceCase(isExpertProfileVerified ? 'Verified' : 'Not verfied')}
+                              </Label>
+                            </TableCell>
 
                             <TableCell align="right">
                               <IconButton
@@ -280,7 +295,8 @@ export default function Agencies() {
                                 color="inherit"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  handleOpenMenu(e, _id, isDeleted);
+                                  // handleOpenMenu(e, _id, isDeleted);
+                                  handleOpenMenu(e, _id, isDeleted, role, isExpertProfileVerified);
                                 }}
                               >
                                 <Iconify icon={'eva:more-vertical-fill'} />
@@ -344,7 +360,11 @@ export default function Agencies() {
           </Card>
         )}
       </Container>
-
+      <ShowAgencyProfileDailog
+        open={showProfileDialog}
+        setOpen={(value) => setShowProfileDailog(value)}
+        userId={suspendId}
+      />
       {newUserClicked && (
         <SignUpAgency title='Agency'  isAdmin close={(value) => setNewUserClicked(value)} roles={[{ value: 'ADMIN', label: 'Admin' }]} />
       )}
@@ -366,6 +386,17 @@ export default function Agencies() {
           },
         }}
       >
+        {isExprofileVerified && (
+          <MenuItem
+            sx={{ color: 'grey.main' }}
+            onClick={() => {
+              setShowProfileDailog(true);
+              handleCloseMenu();
+            }}
+          >
+            See Profile
+          </MenuItem>
+        )}
         <MenuItem
           sx={{ color: 'error.main' }}
           onClick={() => {

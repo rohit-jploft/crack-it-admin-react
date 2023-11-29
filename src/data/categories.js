@@ -2,7 +2,13 @@ import Axios from 'axios';
 import { BASE_URL } from '../constant';
 
 export const createCategory = async (data) => {
-  const res = Axios.post(`${BASE_URL}category/create`, data);
+  const newFormData = new FormData();
+  if (data && data.image) {
+    newFormData.append('title', data.title);
+    if (data.parent) newFormData.append('parent', data.parent);
+    newFormData.append('image', data.image);
+  }
+  const res = Axios.post(`${BASE_URL}category/create`, data && data?.image ? newFormData : data);
   return res;
 };
 export const getCategories = async (parent, search, limit, page) => {
@@ -34,8 +40,14 @@ export const deleteCategory = async (categoryId) => {
 };
 export const updateCategory = async (id, data) => {
   let res;
+  const newFormData = new FormData();
+  if (data && data.image) {
+    newFormData.append('title', data.title);
+    if (data.parent) newFormData.append('parent', data.parent);
+    newFormData.append('image', data.image);
+  }
   if (id) {
-    res = await Axios.put(`${BASE_URL}category/update/${id}`, { title: data.title, parent: data.parent });
+    res = await Axios.put(`${BASE_URL}category/update/${id}`,  data && data?.image ? newFormData : data);
   }
   return res;
 };

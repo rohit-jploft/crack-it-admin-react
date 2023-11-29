@@ -128,7 +128,7 @@ export default function AddPromoCode(props) {
         props.close(false);
       }
       if (res && !res.success) {
-        toast.error(res.response.data.message);
+        toast.error(res.message);
       }
       if (res && !res.success) {
         toast.error(res.message);

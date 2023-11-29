@@ -16,15 +16,16 @@ import { BASE_URL } from '../constant';
 import Socket from '../data/socket';
 
 const ChatPage = () => {
-    const {selectConvo} = useParams()
-  const [selectedConversation, setSelectedConversation] = useState(selectConvo ||  null);
+  const { selectConvo } = useParams();
+  const [selectedConversation, setSelectedConversation] = useState(selectConvo || null);
   const [convoData, setConvoData] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [messageSent, setMessageSent] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [file, setFile] = useState();
-  const [newMsgObj, setNewMsgObj] = useState()
+  const [newMsgObj, setNewMsgObj] = useState();
 
   useEffect(() => {
     Socket.emit('addUser', localStorage.getItem('userId'));
@@ -52,8 +53,9 @@ const ChatPage = () => {
 
   useEffect(() => {
     getConvoMessages();
+    setMessageSent(false);
     Socket.emit('join_room', selectedConversation);
-  }, [selectedConversation, Socket,newMsgObj]);
+  }, [selectedConversation, Socket, newMsgObj, messageSent]);
   useEffect(() => {
     getConvo();
   }, []);
@@ -61,16 +63,16 @@ const ChatPage = () => {
     Socket.on('getMessage', (newIncomingMsg) => {
       console.log('helloooooooooooooo');
       console.log(newIncomingMsg, 'new message');
-      setNewMsgObj(newIncomingMsg)
-    //   setMessages([
-    //     ...messages,
-    //     {
-    //       sender: { _id: newIncomingMsg.sender },
-    //       content: newIncomingMsg.content,
-    //       chat: selectedConversation,
-    //       _id: newIncomingMsg._id,
-    //     },
-    //   ]);
+      setNewMsgObj(newIncomingMsg);
+      //   setMessages([
+      //     ...messages,
+      //     {
+      //       sender: { _id: newIncomingMsg.sender },
+      //       content: newIncomingMsg.content,
+      //       chat: selectedConversation,
+      //       _id: newIncomingMsg._id,
+      //     },
+      //   ]);
     });
   }, [Socket]);
   useEffect(() => {
@@ -84,6 +86,7 @@ const ChatPage = () => {
   const handleSendMessage = async (messageText) => {
     // Send the message to the selected conversation
     // Update the 'messages' state with the new message
+    console.log("button clicked")
     const userId = localStorage.getItem('userId');
     const newMessage = {
       sender: {
@@ -93,22 +96,31 @@ const ChatPage = () => {
       content: messageText,
       chat: selectedConversation,
     };
-    if (file) newMessage.audio = file;
-    const sentMsg = await sendMessage(selectedConversation, messageText, file || '')
+  
+    if (file) {
+      newMessage.audio = file
+    };
+    console.log(messageText, "inside msg text");
+    const sentMsg = await sendMessage(selectedConversation, file ? file.name : messageText, file || null)
       .then((res) => {
-        console.log(res)
         setMessages([...messages, newMessage]);
+        setFile();
         // const res =
         Socket.emit('sendMessage', {
           chat: selectedConversation,
           content: messageText,
           sender: userId,
-          _id: res._id,
+          _id: res?._id,
         });
+        setMessageSent(true);
+        // setNewMessage('');
       })
       .catch((err) => {
         console.log(err);
       });
+    // if (scrollRef.current) {
+    //   scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    // }
   };
 
   return (
@@ -131,13 +143,13 @@ const ChatPage = () => {
         </Grid>
         <Grid item xs={12} md={9}>
           <Paper elevation={3} className="chat-box-paper">
-            {/* <VoiceMessage audioUrl='https://file-examples.com/storage/feb57324aa650f65fa00875/2017/11/file_example_MP3_700KB.mp3'/> */}
             {selectedConversation && (
               <ChatBox
                 file={file}
                 setFile={(value) => setFile(value)}
                 messages={messages}
-                onSendMessage={handleSendMessage}
+                newMsgSent={(value) => setMessageSent(value)}
+                onSendMessage={(value) => handleSendMessage(value)}
                 selectedConvoId={selectedConversation}
               />
             )}

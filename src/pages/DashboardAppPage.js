@@ -87,6 +87,24 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
+         
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={3}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              navigate('/dashboard/agencies');
+            }}
+          >
+            <AppWidgetSummary
+              title="Total Agency"
+              total={dashboardData?.totalAgency}
+              color="warning"
+              icon={'ant-design:windows-filled'}
+            />
+          </Grid>
           <Grid
             item
             xs={12}
@@ -104,7 +122,6 @@ export default function DashboardAppPage() {
               icon={'ant-design:windows-filled'}
             />
           </Grid>
-
           <Grid
             item
             xs={12}

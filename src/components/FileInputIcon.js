@@ -1,30 +1,63 @@
-import { IconButton } from '@mui/material';
-import React, { useRef } from 'react';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-// import './FileInputIcon.css'; // Import your CSS file for styling
+import React, { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const FileInputIcon = ({file, setFile}) => {
+// import Attach from "../images/attach.svg";
+import { IconButton } from "@mui/material";
+import AttachmentIcon from '@mui/icons-material/Attachment';
+
+const FileInputIcon = ({ file, setFile }) => {
   const fileInputRef = useRef(null);
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
-    // Do something with the selected file, e.g., upload or process it
-    console.log('Selected file:', selectedFile);
-    setFile(selectedFile)
+
+    if (selectedFile) {
+      const fileType = selectedFile.type;
+      const acceptedTypes = ["audio/*", "application/pdf", "image/*"];
+      if (acceptedTypes.some((type) => fileType.match(type))) {
+        // File type is valid, you can handle the file here
+        console.log("Selected file:", selectedFile);
+        setFile(selectedFile);
+      } else {
+        toast.error(
+          "Invalid file type. Please select an audio, PDF, or image file."
+        );
+        setFile();
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleIconClick = () => {
-    // Trigger the file input when the icon is clicked
     fileInputRef.current.click();
+  };
+
+  const handleIconKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === "Space") {
+      fileInputRef.current.click();
+    }
   };
 
   return (
     <div className="file-input-container">
-      <input type="file" ref={fileInputRef} onChange={handleFileInputChange} style={{ display: 'none' }} />
-
-      <IconButton className="file-input-label" onClick={handleIconClick}>
-        <AttachFileIcon />
+      <ToastContainer />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileInputChange}
+        style={{ display: "none" }}
+      />
+      <IconButton onClick={handleIconClick}>
+        <AttachmentIcon/>
       </IconButton>
+      {/* <img
+        className="attachment"
+        src={Attach}
+        alt="img"
+        onClick={handleIconClick}
+        onKeyDown={handleIconKeyDown}
+      /> */}
     </div>
   );
 };

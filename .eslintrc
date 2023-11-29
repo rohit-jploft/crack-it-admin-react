@@ -27,6 +27,7 @@
   "rules": {
     "no-new": 0,
     "no-alert": 0,
+    "jsx-a11y/media-has-caption": "off",
     "no-shadow": 0,
     "no-console": 0,
     "react/jsx-key": 1,
@@ -76,5 +77,6 @@
         "array": false
       }
     ]
+ 
   }
 }

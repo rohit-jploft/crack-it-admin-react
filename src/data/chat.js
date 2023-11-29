@@ -15,6 +15,7 @@ export const sendMessage = async (convoId, msg, audio) => {
   if (audio) {
     newFormData.append('chat', convoId);
     newFormData.append('sender', sender);
+    newFormData.append('type', audio.type);
     newFormData.append('content', msg);
     newFormData.append('audio', audio);
   }
@@ -41,3 +42,13 @@ export const searchConvoApi = async (search) => {
   }
   return [];
 };
+
+export const getChatFromMeetingId = async (meetingId) => {
+  try {
+    const res = await Axios.get(`${BASE_URL}chat/get/from/meeting/${meetingId}`)
+    console.log(res)
+    return res;
+  } catch (error) {
+    return error
+  }
+}

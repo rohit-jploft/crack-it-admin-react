@@ -9,6 +9,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 import Axios from 'axios';
 import { BASE_URL } from '../../../constant';
 import account from '../../../data/account';
+import { isAdmin } from '../../../data/user';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +21,7 @@ export default function AccountPopover({setCommissionModel, showCommissionModel}
   const [open, setOpen] = useState(null);
   const [userData, setUserData] = useState();
   const navigate = useNavigate();
+  const issdmin = isAdmin()
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -42,6 +44,7 @@ export default function AccountPopover({setCommissionModel, showCommissionModel}
   useEffect(() => {
     getUserData();
   }, [showCommissionModel,open]);
+  console.log(issdmin , "isAdmin")
 
   return (
     <>
@@ -108,7 +111,7 @@ export default function AccountPopover({setCommissionModel, showCommissionModel}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem
+       {!issdmin && <MenuItem
           onClick={() => {
             handleClose();
             setCommissionModel(true)
@@ -117,7 +120,7 @@ export default function AccountPopover({setCommissionModel, showCommissionModel}
           sx={{ m: 1 }}
         >
           Set Commission
-        </MenuItem>
+        </MenuItem>}
        
         <MenuItem
           onClick={() => {

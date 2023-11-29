@@ -205,7 +205,7 @@ export default function Admins() {
         {!newUserClicked && (
           <Card>
             <Stack  direction="row" alignItems="center" justifyContent="space-between">
-              <UserListToolbar numSelected={selected.length} filterName={search} onFilterName={handleFilterByName} />
+              <UserListToolbar numSelected={selected.length} filterName={search} onFilterName={setSearch} />
 
               {!newUserClicked && (
             <Button

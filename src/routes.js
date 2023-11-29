@@ -13,15 +13,19 @@ import Chat from './pages/Chat';
 import Payments from './pages/Payments';
 import Admins from './pages/Admins';
 import ChangePassword from './pages/ChangePassword';
-import { isAdmin } from './data/user';
+import { isAdmin, isSuperAdmin } from './data/user';
 import WithDrawalRequest from './pages/WithdrawalReq';
 import PromoCodes from './pages/PromoCodes';
 import Agencies from './pages/Agencies';
+import ContactLeads from './pages/Contact';
 
 function AppRoutes() {
   const isAuthenticateds = isAuthenticated();
   const isadmin = isAdmin();
-  console.log('ddd', isAuthenticateds);
+  const issuperAdmin = isSuperAdmin()
+  
+  console.log('isadmin', isAuthenticateds);
+  console.log('issuperAdmin', );
   const routes = useRoutes([
     {
       path: '/dashboard',
@@ -34,13 +38,17 @@ function AppRoutes() {
         { path: 'app', element: isAuthenticateds ? <DashboardAppPage /> : <Navigate to="/login" /> },
         { path: 'user/:userType', element: isAuthenticateds ? <UserPage /> : <Navigate to="/login" /> },
         { path: 'user', element: isAuthenticateds ? <UserPage /> : <Navigate to="/login" /> },
-        { path: 'admin', element: isAuthenticateds ? <Admins /> : <Navigate to="/login" /> },
+        { path: 'admin', element: isAuthenticateds && issuperAdmin ? <Admins /> : <Page404/> },
         { path: 'agencies', element: isAuthenticateds ? <Agencies /> : <Navigate to="/login" /> },
         { path: 'meetings/:type', element: isAuthenticateds ? <MeetingsPage /> : <Navigate to="/login" /> },
         { path: 'meetings', element: isAuthenticateds ? <MeetingsPage /> : <Navigate to="/login" /> },
         {
           path: 'categories',
           element: isAuthenticateds ? <Categories /> : <Navigate to="/login" />,
+        },
+        {
+          path: 'contacts',
+          element: isAuthenticateds ? <ContactLeads /> : <Navigate to="/login" />,
         },
         {
           path: 'categories/:categoryId',
@@ -53,15 +61,15 @@ function AppRoutes() {
 
         {
           path: 'payments',
-          element: isAuthenticateds ? isadmin ? <Payments /> : <Page404 /> : <Navigate to="/login" />,
+          element: isAuthenticateds && issuperAdmin ? <Payments /> : <Page404 />,
         },
         {
           path: 'withdrawal-request',
-          element: isAuthenticateds ? isadmin ? <WithDrawalRequest /> : <Page404 /> : <Navigate to="/login" />,
+          element: isAuthenticateds && issuperAdmin ? <WithDrawalRequest /> : <Page404 />,
         },
         {
           path: 'payments/:paymentStatus',
-          element: isAuthenticateds ? isadmin ? <Payments /> : <Page404 /> : <Navigate to="/login" />,
+          element: isAuthenticateds && issuperAdmin ? <Payments /> : <Page404 />,
         },
         {
           path: 'chat',

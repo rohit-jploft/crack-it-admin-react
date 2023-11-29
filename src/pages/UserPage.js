@@ -38,12 +38,14 @@ import USERLIST, { getUsers, suspendAccount } from '../data/user';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
 import SignUp from './SignUpPage';
 import DeleteAlert from '../components/DeleteAlert';
+import ShowExpertProfileDialog from '../components/ShowExpertProfileDailog';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
   { id: 'phone', label: 'Phone', alignRight: false },
+  { id: 'IsExpertVerified', label: 'IsExpertVerified', alignRight: false },
   { id: 'isDeleted', label: 'Account Status', alignRight: false },
   { id: 'action', label: 'Action' },
 ];
@@ -80,7 +82,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const {userType} = useParams()
+  const { userType } = useParams();
   const [suspendId, setSuspenId] = useState('');
   const [open, setOpen] = useState(null);
   const [showDeleteDailog, setDeleteDailog] = useState(false);
@@ -98,10 +100,13 @@ export default function UserPage() {
 
   const [usersData, setUsersData] = useState([]);
 
-// pre selected role
-const preRole = userType || ''
+  // pre selected role
+  const preRole = userType || '';
 
   const [role, setRole] = useState(preRole);
+  const [clickedRole, setClickedRole] = useState();
+  const [isExprofileVerified, setIsExProfileVerified] = useState(false);
+  const [showProfileDialog, setShowProfileDailog] = useState(false);
   const [search, setSearch] = useState('');
   const [newUserClicked, setNewUserClicked] = useState(false);
   const [suspendDone, setSuspendDone] = useState(false);
@@ -129,10 +134,12 @@ const preRole = userType || ''
     }
     setSuspendDone(false);
   };
-  const handleOpenMenu = (event, id, isDeleted) => {
+  const handleOpenMenu = (event, id, isDeleted, role, verified) => {
     setOpen(event.currentTarget);
     setSuspenId(id);
+    setClickedRole(role);
     setSelectedUserSuspended(isDeleted);
+    setIsExProfileVerified(verified);
   };
 
   const handleCloseMenu = () => {
@@ -233,12 +240,13 @@ const preRole = userType || ''
                 marginBottom: -0.5,
               }}
             >
-              <UserListToolbar numSelected={selected.length} filterName={search} onFilterName={handleFilterByName} />
+              <UserListToolbar numSelected={selected.length} filterName={search} onFilterName={setSearch} />
               <UserSortByRole
                 options={[
                   { value: '', label: 'All' },
-                  { value: 'USER', label: 'User' },
-                  { value: 'EXPERT', label: 'Expert' },
+                  { value: 'USER', label: 'Users' },
+                  { value: 'EXPERT', label: 'Experts' },
+                  { value: 'AGENCY-EXPERT', label: 'Agency-Experts' },
                 ]}
                 onSort={(e) => setRole(e.target.value)}
                 value={role}
@@ -259,7 +267,7 @@ const preRole = userType || ''
                   />
                   <TableBody className="table-bodys">
                     {usersData?.map((row) => {
-                      const { _id, firstName, lastName, role, email, phone, isDeleted } = row;
+                      const { _id, firstName, lastName, role, email, phone, isDeleted, isExpertProfileVerified } = row;
                       const selectedUser = selected.indexOf(firstName) !== -1;
 
                       return (
@@ -283,6 +291,12 @@ const preRole = userType || ''
                             <TableCell align="left">{role}</TableCell>
 
                             <TableCell align="left">{phone}</TableCell>
+                            <TableCell align="left">
+                              {' '}
+                              <Label color={isExpertProfileVerified ? 'success' : 'warning'}>
+                                {sentenceCase(isExpertProfileVerified ? 'Verified' : 'Not verifed')}
+                              </Label>
+                            </TableCell>
 
                             <TableCell align="left">
                               <Label color={isDeleted ? 'warning' : 'success'}>
@@ -296,7 +310,7 @@ const preRole = userType || ''
                                 color="inherit"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  handleOpenMenu(e, _id, isDeleted);
+                                  handleOpenMenu(e, _id, isDeleted, role, isExpertProfileVerified);
                                 }}
                               >
                                 <Iconify icon={'eva:more-vertical-fill'} />
@@ -335,7 +349,7 @@ const preRole = userType || ''
                             </Typography> */}
 
                             <Typography variant="body2">
-                              No results found 
+                              No results found
                               {/* <br /> Try checking for typos or using complete words. */}
                             </Typography>
                           </Paper>
@@ -359,7 +373,11 @@ const preRole = userType || ''
           </Card>
         )}
       </Container>
-
+      <ShowExpertProfileDialog
+        open={showProfileDialog}
+        setOpen={(value) => setShowProfileDailog(value)}
+        userId={suspendId}
+      />
       {newUserClicked && (
         <SignUp
           title="Expert"
@@ -386,6 +404,17 @@ const preRole = userType || ''
           },
         }}
       >
+        {clickedRole === 'EXPERT' && isExprofileVerified && (
+          <MenuItem
+            sx={{ color: 'grey.main' }}
+            onClick={() => {
+              setShowProfileDailog(true);
+              handleCloseMenu();
+            }}
+          >
+            See Profile
+          </MenuItem>
+        )}
         <MenuItem
           sx={{ color: 'error.main' }}
           onClick={() => {

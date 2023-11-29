@@ -30,24 +30,24 @@ const ConversationList = ({ conversations, onConversationClick, selectedConversa
       <List>
         {conversations.map((conversation) => (
           <ListItemButton
-            key={conversation._id}
+            key={conversation?._id}
             onClick={() => {
-              handleConversationClick(conversation._id);
+              handleConversationClick(conversation?._id);
               setConvoData(conversation);
             }}
             className={`conversation-item custom-selected-list-item ${
-              conversation._id === selectedConversation ? 'active' : ''
+              conversation?._id === selectedConversation ? 'active' : ''
             }`}
             style={{ cursor: 'pointer' }}
-            selected={conversation._id === selectedConversation}
+            selected={conversation?._id === selectedConversation}
           >
             <ListItemAvatar>
              <AvatarGroup total={3}>
-             <Avatar alt={conversation.name} src={conversation.avatar} />
+             <Avatar alt={conversation?.name} src={conversation?.avatar} />
              </AvatarGroup>
             </ListItemAvatar>
             <ListItemText
-              primary={`${conversation.participants[0].firstName} , ${conversation.participants[1].firstName}`}
+              primary={`${conversation?.participants[0]?.firstName} , ${conversation?.participants[1]?.firstName}`}
               
             />
           </ListItemButton>

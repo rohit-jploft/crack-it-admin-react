@@ -54,10 +54,10 @@ const validationSchema = Yup.object().shape({
   lastName: Yup.string().required('Last Name is required'),
   email: Yup.string().email('Invalid email format').required('Email is required'),
   phone: Yup.string()
-    .matches(
-      /^[0-9]{10}$/, // You can adjust the regular expression to match your desired format
-      'Phone number must be exactly 10 digits'
-    )
+    // .matches(
+    //   /^[0-9]{10}$/, // You can adjust the regular expression to match your desired format
+    //   'Phone number must be exactly 10 digits'
+    // )
     .required('Phone number is required'),
   password: Yup.string()
     .required('Password is required')
@@ -159,9 +159,30 @@ export default function SignUp(props) {
             </Grid>
             <Grid item xs={12}>
               <div className="hellos">
-                <PhoneInput
+              <PhoneInput
+                    name="phone"
+                    label="Phone Number *"
+                    autoCorrect="off"
+                    placeholder="Enter a Valid Phone Number"
+                    country={"in"}
+                    style={{outerWidth:"100%"}}
+                    value={`+${dailCode}`}
+                    // value={formik.values.phone}
+                    onChange={(phone, e) => {
+                      console.log('phone', phone);
+                      console.log('e', e);
+                      setDialCode(e.dialCode);
+                      formik.setFieldValue("phone", phone);
+                      // setMobileNumberCountryCode(phone)
+  
+                      // setFieldValue("mobilenumberCountryCode", phone);
+                    }}
+                    error={formik.touched.phone && Boolean(formik.errors.phone)}
+                    helperText={formik.touched.phone && formik.errors.phone}
+                  />
+                {/* <PhoneInput
                   country={'in'}
-                  className="country-selector"
+                  // className="country-selector"
                   
                   enableSearch
                   name="phone"
@@ -174,13 +195,16 @@ export default function SignUp(props) {
                     console.log('phone', phone);
                     console.log('e', e);
                     setDialCode(e.dialCode);
+                    // if (e.target.value.toString().length <= 10) {
+                      formik.setFieldValue("phone", phone)
+                    // }
                     // setMobileNumberCountryCode(phone)
 
                     // setFieldValue("mobilenumberCountryCode", phone);
                   }}
-                />
+                /> */}
 
-                <div className="phone-number-fils">
+                {/* <div className="phone-number-fils">
                   <TextField
                     name="phone"
                     id="phone"
@@ -199,7 +223,7 @@ export default function SignUp(props) {
                     error={formik.touched.phone && Boolean(formik.errors.phone)}
                     helperText={formik.touched.phone && formik.errors.phone}
                   />
-                </div>
+                </div> */}
               </div>
             </Grid>
             {/* <Grid item xs={12}>

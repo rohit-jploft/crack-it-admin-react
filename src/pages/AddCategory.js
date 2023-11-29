@@ -66,8 +66,9 @@ export default function AddCategory(props) {
     //   setCreated(true);
       // alert(JSON.stringify(values, null, 2));
       const obj = {};
-        if (categoryId) obj.parent = categoryId;
+      if (categoryId) obj.parent = categoryId;
       if (values.title) obj.title = values.title.toString();
+      if(image) obj.image = image
       const res = props.edit.id ? await updateCategory(props.edit.id, obj) : await createCategory(obj);
       if (res?.data && res.data?.data.title) {
         setCreated(true);
@@ -91,6 +92,27 @@ export default function AddCategory(props) {
 
 
 
+  const handleFileInputChange = (e) => {
+    const selectedFile = e.target.files[0];
+
+    if (selectedFile) {
+      const fileType = selectedFile.type;
+      const acceptedTypes = ["image/*"];
+      if (acceptedTypes.some((type) => fileType.match(type))) {
+        // File type is valid, you can handle the file here
+        console.log("Selected file:", selectedFile);
+        setImage(selectedFile);
+      } else {
+        toast.error(
+          "Invalid file type. Please select an  image file."
+        );
+        setImage();
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+ 
   const handleIconClick = () => {
     // Trigger the file input when the icon is clicked
     fileInputRef.current.click();
@@ -121,7 +143,7 @@ export default function AddCategory(props) {
                 helperText={formik.touched.title && formik.errors.title}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
+           {props.showFilePicker && <Grid item xs={12} sm={12}>
               <TextField
                 name="image"
                 // label="Image"
@@ -131,12 +153,11 @@ export default function AddCategory(props) {
                 fullWidth
                 id="image"
                 {...formik.getFieldProps('image')}
-                onChange={(e) => setImage(e.target.files[0])}
-                value={image}
+                onChange={handleFileInputChange}
                 error={!image}
                 helperText={!image && "Image is required"}
               />
-            </Grid>
+            </Grid>}
           </Grid>
           <Button
             disabled={created}

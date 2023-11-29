@@ -124,8 +124,8 @@ export default function PromoCodes() {
 
   useEffect(() => {
     (async () => {
-      const promoCodes = await getAllPromoCodes(search, status);
-      //   setTotalCount(withdrawal.pagination.totalCount);
+      const promoCodes = await getAllPromoCodes(search, status, page, rowsPerPage);
+        setTotalCount(promoCodes.pagination.totalCount);
       setActiveDone(false);
       setDeleted(false);
       setPromoCodesData(promoCodes.data);
