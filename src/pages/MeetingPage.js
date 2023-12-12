@@ -262,7 +262,7 @@ export default function MeetingsPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {autoCapitaliseFirstLetter(user.firstName)}
+                              {autoCapitaliseFirstLetter(user?.firstName)}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -295,8 +295,8 @@ export default function MeetingsPage() {
                           <Button onClick={() => {
                             setSelectedMeetingId(_id)
                             setMeetingDetailDailog(true)
-                            setExpertName(`${expert.firstName} ${expert.lastName}`)
-                            setUserName(`${user.firstName} ${user.lastName}`)
+                            setExpertName(`${expert?.firstName} ${expert.lastName}`)
+                            setUserName(`${user?.firstName} ${user.lastName}`)
                           }}>See Details</Button>
                         </TableCell>
                       </TableRow>

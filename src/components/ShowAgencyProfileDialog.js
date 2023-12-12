@@ -19,7 +19,7 @@ const ShowAgencyProfileDailog = ({ open, setOpen, userId }) => {
   }, [userId, open]);
 
   return (
-    <Dialog aria-labelledby="alert-dialog-title"
+    <Dialog style={{opacity:"0.5"}} aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description" open={open} onClose={() => setOpen(false)}>
       <DialogTitle>Agency Profile</DialogTitle>
       <DialogContent>

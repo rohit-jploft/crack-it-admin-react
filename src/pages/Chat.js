@@ -129,7 +129,7 @@ const ChatPage = () => {
         <title>Chat</title>
       </Helmet>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={12}>
           <Paper elevation={3} className="conversation-list-paper">
             <ConversationList
               conversations={conversations}
@@ -141,7 +141,7 @@ const ChatPage = () => {
             />
           </Paper>
         </Grid>
-        <Grid item xs={12} md={9}>
+        <Grid item xs={12} md={12}>
           <Paper elevation={3} className="chat-box-paper">
             {selectedConversation && (
               <ChatBox
@@ -154,6 +154,7 @@ const ChatPage = () => {
               />
             )}
           </Paper>
+          <p className='text-center' style={{textAlign:"center"}}>No chat Available</p>
         </Grid>
       </Grid>
     </Container>
