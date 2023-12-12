@@ -256,6 +256,7 @@ export default function AddPromoCode(props) {
                 value={formik.values.expirationDate}
                 error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
                 helperText={formik.touched.expirationDate && formik.errors.expirationDate}
+                focused
               />
             </Grid>
           </Grid>

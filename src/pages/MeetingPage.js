@@ -37,7 +37,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
 import USERLIST, { getUsers } from '../data/user';
 import { enterChatAdmin, getAllMeeting } from '../data/meetings';
-import { getTimeFromTimestamps, getDateFromTimeStamps } from '../utils/helper';
+import { getTimeFromTimestamps, getDateFromTimeStamps, autoCapitaliseFirstLetter } from '../utils/helper';
 import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
 import ShowMeetingDetailDailog from '../components/ShowMeetingDetailDailog';
 // ----------------------------------------------------------------------
@@ -252,7 +252,7 @@ export default function MeetingsPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {expert.firstName}
+                              {autoCapitaliseFirstLetter(expert?.firstName)}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -262,7 +262,7 @@ export default function MeetingsPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {user.firstName}
+                              {autoCapitaliseFirstLetter(user.firstName)}
                             </Typography>
                           </Stack>
                         </TableCell>

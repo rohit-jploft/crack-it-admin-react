@@ -2,16 +2,15 @@ import { Chip, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Bu
 import React, { useEffect, useState } from 'react';
 import { getExpertProfile } from '../data/user';
 import { getSingleBookingDetail } from '../data/meetings';
-import { getDateFromTimeStamps } from '../utils/helper';
+import { autoCapitaliseFirstLetter, getDateFromTimeStamps } from '../utils/helper';
 
-
-const ShowMeetingDetailDailog = ({ open, setOpen, meetingId,expertName, userName }) => {
+const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userName }) => {
   const [data, setData] = useState();
 
   const getProfileData = async () => {
     if (meetingId) {
       const res = await getSingleBookingDetail(meetingId);
-      console.log(res.data, "meeting single")
+      console.log(res.data, 'meeting single');
       setData(res?.data);
     }
   };
@@ -22,54 +21,56 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId,expertName, userName
   }, [meetingId, open]);
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog open={open} onClose={() => setOpen(false)} fullWidth >
       <DialogTitle>Meeting Details</DialogTitle>
       <DialogContent>
-        <Typography sx={{ margin: '5px' }}>
-          <b>Expert Name :</b> {expertName}
+        <Typography sx={{ margin: '5px', marginRight:"15px" }}>
+          <b>Expert Name :</b> {autoCapitaliseFirstLetter(expertName)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>User Name : </b>
-          {userName}{' '}
+          {autoCapitaliseFirstLetter(userName)}{' '}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>Job Category :</b> {data?.booking?.booking?.jobCategory?.title}{' '}
+          <b>Job Category :</b> {autoCapitaliseFirstLetter(data?.booking?.booking?.jobCategory?.title)}{' '}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>date :</b> {getDateFromTimeStamps(data?.booking?.booking?.date)}
+          <b>Date :</b> {getDateFromTimeStamps(data?.booking?.booking?.date)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>meeting status :</b> {data?.booking?.booking?.status}
+          <b>Meeting status :</b> {data?.booking?.booking?.status}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>TimeZone :</b> {data?.booking?.booking?.timeZone}
+          <b>TimeZone :</b> {autoCapitaliseFirstLetter(data?.booking?.booking?.timeZone)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>StartTime :</b> {getDateFromTimeStamps(data?.booking.booking.startTime)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>endTime :</b> {getDateFromTimeStamps(data?.booking?.booking?.endTime)}
+          <b>EndTime :</b> {getDateFromTimeStamps(data?.booking?.booking?.endTime)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>payment Status :</b> {data?.booking?.status}{' '}
+          <b>Payment Status :</b> {data?.booking?.status}{' '}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>grandTotal :</b> ${data?.booking?.grandTotal}{' '}
+          <b>GrandTotal :</b> ${data?.booking?.grandTotal}{' '}
         </Typography>
-       
+
         <Typography sx={{ margin: '5px' }}>
           <b>Job description : </b>
-          {data?.booking.booking.jobDescription}{' '}
+          {autoCapitaliseFirstLetter(data?.booking.booking.jobDescription)}{' '}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>skills : {"    "}</b>
+          <b>Skills : {'    '}</b>
           {data?.booking?.booking?.skills?.map((item) => {
             return <Chip label={item?.title} variant="outlined" />;
           })}
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)} variant="outlined">Close</Button>
+        <Button onClick={() => setOpen(false)} variant="outlined">
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -20,7 +20,8 @@ const ShowExpertProfileDialog = ({ open, setOpen, userId }) => {
   }, [userId, open]);
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog aria-labelledby="alert-dialog-title"
+    aria-describedby="alert-dialog-description" open={open} onClose={() => setOpen(false)}>
       <DialogTitle>Expert Profile</DialogTitle>
       <DialogContent>
         <Typography sx={{ margin: '5px' }}>

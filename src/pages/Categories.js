@@ -333,7 +333,6 @@ export default function Categories() {
                     {categoriesData?.map((row) => {
                       const { _id, title, createdAt, updatedAt, image } = row;
                       const selectedUser = selected.indexOf(_id) !== -1;
-
                       return (
                         <Fragment key={_id}>
                           <TableRow hover key={_id} tabIndex={-1} role="checkbox" selected={selectedUser}>
@@ -343,7 +342,7 @@ export default function Categories() {
 
                             <TableCell component="th" scope="row" padding="none" className="row-data">
                               <Stack direction="row" alignItems="center" spacing={2}>
-                                <Avatar />
+                                {/* <Avatar /> */}
                                 <Typography variant="subtitle2" noWrap>
                                   {title}
                                 </Typography>

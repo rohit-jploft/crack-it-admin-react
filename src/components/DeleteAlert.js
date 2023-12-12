@@ -7,7 +7,8 @@ const DeleteAlert = ({ open, onClose, onConfirmDelete, itemName, title }) => {
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust background opacity
   };
   return (
-    <Dialog open={open} onClose={onClose} BackdropProps={{ style: dialogStyles }} onBackdropClick={onClose} >
+    <Dialog aria-labelledby="alert-dialog-title"
+    aria-describedby="alert-dialog-description" open={open} onClose={onClose} BackdropProps={{ style: dialogStyles }} onBackdropClick={onClose} >
       <DialogTitle>{title} Confirmation</DialogTitle>
       <DialogContent>
         <DialogContentText>Are you sure you want to {title.toLowerCase()} {itemName}?</DialogContentText>

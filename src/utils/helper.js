@@ -42,3 +42,7 @@ export function scrollToBottom(containerId) {
     container.scrollTop = container.scrollHeight;
   }
 }
+
+export const autoCapitaliseFirstLetter = (str) => {
+  return str?.charAt(0).toUpperCase() + str?.slice(1)
+}

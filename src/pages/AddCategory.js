@@ -65,27 +65,31 @@ export default function AddCategory(props) {
     onSubmit: async (values) => {
     //   setCreated(true);
       // alert(JSON.stringify(values, null, 2));
-      const obj = {};
-      if (categoryId) obj.parent = categoryId;
-      if (values.title) obj.title = values.title.toString();
-      if(image) obj.image = image
-      const res = props.edit.id ? await updateCategory(props.edit.id, obj) : await createCategory(obj);
-      if (res?.data && res.data?.data.title) {
-        setCreated(true);
-        // props.editDone(true)
-        toast.success(res.data.message, {
-          onClose: () => {
-            props.close(false);
-            props.isDone(true);
-          },
-          autoClose: 800,
-        });
-        // props.close(false);
+      if(image){
+        const obj = {};
+        if (categoryId) obj.parent = categoryId;
+        if (values.title) obj.title = values.title.toString();
+        if(image) obj.image = image
+        const res = props.edit.id ? await updateCategory(props.edit.id, obj) : await createCategory(obj);
+        if (res?.data && res.data?.data.title) {
+          setCreated(true);
+          // props.editDone(true)
+          toast.success(res.data.message, {
+            onClose: () => {
+              props.close(false);
+              props.isDone(true);
+            },
+            autoClose: 800,
+          });
+          // props.close(false);
+        }
+        if (res?.type === 'error' && res?.status === 200) toast(res.message, { type: 'error' });
+        setCreated(false);
+        props.isDone(true);
+        props.editDone(true)
+      } else {
+        toast.error("Image is required")
       }
-      if (res?.type === 'error' && res?.status === 200) toast(res.message, { type: 'error' });
-      setCreated(false);
-      props.isDone(true);
-      props.editDone(true)
     },
   });
   const fileInputRef = useRef(null);
