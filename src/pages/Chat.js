@@ -154,7 +154,7 @@ const ChatPage = () => {
               />
             )}
           </Paper>
-          <p className='text-center' style={{textAlign:"center"}}>No chat Available</p>
+         {conversations && conversations.length <=0 && <p className='text-center' style={{textAlign:"center"}}>No chat Available</p>}
         </Grid>
       </Grid>
     </Container>
