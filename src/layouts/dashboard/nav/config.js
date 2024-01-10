@@ -28,7 +28,7 @@ const superAdminConfig = [
     icon: icon('ic_user'),
   },
   {
-    title: 'Admins',
+    title: 'Sub-Admins',
     path: '/dashboard/admin',
     icon: <AdminPanelSettingsIcon/>,
   },

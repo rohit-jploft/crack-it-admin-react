@@ -418,16 +418,17 @@ export default function Categories() {
                               onConfirmDelete={() => deleteCat(selectedDeleteId)}
                               open={showDeleteDailog}
                               onClose={() => setDeleteDailog(false)}
+                              opacity={showButtonCount > 0 ? "1" : "0.5"}
                             />
                           )}
                         </Fragment>
                       );
                     })}
-                    {emptyRows > 0 && (
+                    {/* {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
-                    )}
+                    )} */}
                   </TableBody>
 
                   {categoriesData.length === 0 && (
@@ -463,6 +464,7 @@ export default function Categories() {
               count={totalCount}
               rowsPerPage={rowsPerPage}
               page={page}
+              
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
@@ -476,6 +478,7 @@ export default function Categories() {
             close={(value) => setNewCategoryClicked(value)}
             isDone={(value) => setCreated(value)}
             showFilePicker={!categoryId}
+            showButtonCount={showButtonCount}
           />
         )}
       </Container>

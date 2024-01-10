@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import {PersonOffOutlined, Person2Outlined} from '@mui/icons-material';
 // @mui
 import {
   Card,
@@ -305,20 +306,21 @@ export default function Agencies() {
                           </TableRow>
                           {showDeleteDailog && (
                             <DeleteAlert
-                              title={selectedUserSuspended ? 'Activate Account' : 'Suspend Account'}
+                              title={selectedUserSuspended ? 'Activate Account' : 'Inactivate Account'}
                               onConfirmDelete={() => suspendUserAccount(suspendId, isDeleted)}
                               open={showDeleteDailog}
                               onClose={() => setDeleteDailog(false)}
+                              opacity={"0.5"}
                             />
                           )}
                         </>
                       );
                     })}
-                    {emptyRows > 0 && (
+                    {/* {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
-                    )}
+                    )} */}
                   </TableBody>
 
                   {usersData.length === 0 && (
@@ -398,13 +400,14 @@ export default function Agencies() {
           </MenuItem>
         )}
         <MenuItem
-          sx={{ color: 'error.main' }}
+          sx={{ color:selectedUserSuspended ? 'success.main' : 'error.main' }}
           onClick={() => {
             setDeleteDailog(true);
           }}
         >
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          {selectedUserSuspended ? 'Active' : 'Suspend'}
+          {/* <Iconify icon={'eva:user-2-outline'} sx={{ mr: 2 }} /> */}
+          {selectedUserSuspended ? <Person2Outlined sx={{marginRight:"4px"}}/> : <PersonOffOutlined sx={{marginRight:"4px"}}/>}
+          {selectedUserSuspended ? 'Active' : 'InActive'}
         </MenuItem>
       </Popover>
     </>

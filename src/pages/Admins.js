@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import {PersonOffOutlined, Person2Outlined} from '@mui/icons-material';
 // @mui
 import {
   Card,
@@ -186,13 +187,13 @@ export default function Admins() {
   return (
     <>
       <Helmet>
-        <title> Admins </title>
+        <title> Sub Admins </title>
       </Helmet>
       <ToastContainer />
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} sx={{ marginBottom: -0.03, marginLeft: '30px', marginRight: '30px' }}>
           <Typography variant="h4" gutterBottom>
-            {newUserClicked ? '' : 'Admin'}
+            {newUserClicked ? '' : 'Sub Admin'}
           </Typography>
           {newUserClicked && (
             <Icon onClick={() => setNewUserClicked(false)} style={{ cursor: 'pointer' }}>
@@ -214,7 +215,7 @@ export default function Admins() {
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => setNewUserClicked(true)}
             >
-              Add new Admin
+              Add new Sub Admin
             </Button>
           )}
               {/* <UserSortByRole
@@ -263,7 +264,7 @@ export default function Admins() {
 
                             <TableCell align="left">{email}</TableCell>
 
-                            <TableCell align="left">{role}</TableCell>
+                            <TableCell align="left">{ role === "ADMIN" ? "Sub-Admin" : role}</TableCell>
 
                             <TableCell align="left">{phone}</TableCell>
 
@@ -288,20 +289,21 @@ export default function Admins() {
                           </TableRow>
                           {showDeleteDailog && (
                             <DeleteAlert
-                              title={selectedUserSuspended ? 'Activate Account' : 'Suspend Account'}
+                              title={selectedUserSuspended ? 'Activate Account' : 'Inactivate Account'}
                               onConfirmDelete={() => suspendUserAccount(suspendId, isDeleted)}
                               open={showDeleteDailog}
                               onClose={() => setDeleteDailog(false)}
+                              opacity={"0.6"}
                             />
                           )}
                         </>
                       );
                     })}
-                    {emptyRows > 0 && (
+                    {/* {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
-                    )}
+                    )} */}
                   </TableBody>
 
                   {usersData.length === 0 && (
@@ -366,13 +368,14 @@ export default function Admins() {
         }}
       >
         <MenuItem
-          sx={{ color: 'error.main' }}
+          sx={{ color:selectedUserSuspended ? 'success.main' : 'error.main' }}
           onClick={() => {
             setDeleteDailog(true);
           }}
         >
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          {selectedUserSuspended ? 'Active' : 'Suspend'}
+          {/* <Iconify icon={'eva:user-2-outline'} sx={{ mr: 2 }} /> */}
+          {selectedUserSuspended ? <Person2Outlined sx={{marginRight:"4px"}}/> : <PersonOffOutlined sx={{marginRight:"4px"}}/>}
+          {selectedUserSuspended ? 'Active' : 'InActive'}
         </MenuItem>
       </Popover>
     </>

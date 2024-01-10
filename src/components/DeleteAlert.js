@@ -1,13 +1,13 @@
 import React from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
-const DeleteAlert = ({ open, onClose, onConfirmDelete, itemName, title }) => {
+const DeleteAlert = ({ open, onClose, onConfirmDelete, itemName, title , opacity}) => {
   const dialogStyles = {
     backdropFilter: 'blur(0)', // Disable background blur
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust background opacity
   };
   return (
-    <Dialog style={{opacity:"0.5"}} aria-labelledby="alert-dialog-title"
+    <Dialog style={{opacity}} aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description" open={open} onClose={onClose} BackdropProps={{ style: dialogStyles }} onBackdropClick={onClose} >
       <DialogTitle>{title} Confirmation</DialogTitle>
       <DialogContent>

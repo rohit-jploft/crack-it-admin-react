@@ -51,6 +51,7 @@ const TABLE_HEAD = [
   { id: 'Date', label: 'Date', alignRight: false },
   { id: 'totalAmount', label: 'TotalAmount', alignRight: false },
   { id: 'commission', label: 'Commission', alignRight: false },
+  { id: 'discount', label: 'Discount', alignRight: false },
   { id: 'grandTotal', label: 'Grand Total' },
   { id: 'status', label: 'Status' },
 ];
@@ -278,9 +279,9 @@ export default function Payments() {
 
                 <TableBody className="table-bodys">
                   {paymentsData?.map((row) => {
-                    const { _id, booking, totalAmount, grandTotal, CommissionAmount, status } = row;
+                    const { _id, booking, totalAmount, grandTotal, CommissionAmount, status , discountAmount} = row;
                     const selectedUser = selected.indexOf(_id) !== -1;
-
+                    console.log(row, "row")
                     return (
                       <TableRow hover key={_id} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         {/* <TableCell padding="checkbox">
@@ -310,6 +311,7 @@ export default function Payments() {
                         <TableCell align="left">{getDateFromTimeStamps(booking.date.toString())}</TableCell>
                         <TableCell align="left">${totalAmount}</TableCell>
                         <TableCell align="left">${CommissionAmount}</TableCell>
+                        <TableCell align="left">${discountAmount ? `${discountAmount}` : "0"}</TableCell>
                         <TableCell align="left">${grandTotal}</TableCell>
 
                         <TableCell align="left">
@@ -324,11 +326,11 @@ export default function Payments() {
                       </TableRow>
                     );
                   })}
-                  {emptyRows > 0 && (
+                  {/* {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>
-                  )}
+                  )} */}
                 </TableBody>
 
                 {paymentsData.length === 0 && (

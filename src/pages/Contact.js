@@ -277,11 +277,11 @@ export default function ContactLeads() {
                       </TableRow>
                     );
                   })}
-                  {emptyRows > 0 && (
+                  {/* {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>
-                  )}
+                  )} */}
                 </TableBody>
 
                 {contactLeadsData.length === 0 && (

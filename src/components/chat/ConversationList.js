@@ -19,14 +19,14 @@ const ConversationList = ({ conversations, onConversationClick, selectedConversa
 
   return (
     <div className="conversation-list" style={{ padding: '10px' }}>
-      <TextField
+      {/* <TextField
         fullWidth
         label="Search Conversations"
         variant="outlined"
         margin="normal"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-      />
+      /> */}
       <List>
         {conversations.map((conversation) => (
           <ListItemButton

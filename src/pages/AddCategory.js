@@ -49,27 +49,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 const validationSchema = Yup.object().shape({
   title: Yup.string().min(3).required('title is required'),
+  // image: Yup.mixed().test('fileType', 'Invalid file type. Please select an image file.', (value) => {
+  //   if (!value) {
+  //     return false; // No file uploaded
+  //   }
+  //   console.log(value, "fileType")
+  //   return value && ['image/jpeg', 'image/png', 'image/gif'].includes(value.type);
+  // }).required('Image is required'),
 });
 export default function AddCategory(props) {
   const { categoryId } = useParams();
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const classes = useStyles();
   const [created, setCreated] = useState(false);
   const [image, setImage] = useState();
+  const [isImageError, setIsImageError] = useState(false);
   const initialTitle = props.edit.title ? props.edit.title : '';
   console.log(props.edit, 'edit cate');
   const formik = useFormik({
     initialValues: {
       title: initialTitle,
+      // image: null, // Set initial value for image to null
     },
     validationSchema,
     onSubmit: async (values) => {
-    //   setCreated(true);
+      setIsFormSubmitted(true);
+        if(!image){
+          setIsImageError(true)
+        }
+      //   setCreated(true);
       // alert(JSON.stringify(values, null, 2));
-      if(image){
+      if (props.showButtonCount === 0 && !image) {
+        setIsImageError(true)
+      } else {
+        if(image){
+          setIsImageError(false)
+        }
         const obj = {};
         if (categoryId) obj.parent = categoryId;
         if (values.title) obj.title = values.title.toString();
-        if(image) obj.image = image
+        if (image) obj.image = image;
         const res = props.edit.id ? await updateCategory(props.edit.id, obj) : await createCategory(obj);
         if (res?.data && res.data?.data.title) {
           setCreated(true);
@@ -81,42 +100,41 @@ export default function AddCategory(props) {
             },
             autoClose: 800,
           });
+          setIsFormSubmitted(false);
           // props.close(false);
         }
-        if (res?.type === 'error' && res?.status === 200) toast(res.message, { type: 'error' });
+        if (res?.type === 'error' && res?.status === 200) {
+          toast(res.message, { type: 'error' });
+          setIsFormSubmitted(false);
+        }
         setCreated(false);
         props.isDone(true);
-        props.editDone(true)
-      } else {
-        toast.error("Image is required")
+        props.editDone(true);
       }
+      setIsImageError(false)
     },
+    
   });
   const fileInputRef = useRef(null);
-
-
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
 
     if (selectedFile) {
       const fileType = selectedFile.type;
-      const acceptedTypes = ["image/*"];
+      const acceptedTypes = ['image/*'];
       if (acceptedTypes.some((type) => fileType.match(type))) {
         // File type is valid, you can handle the file here
-        console.log("Selected file:", selectedFile);
+        console.log('Selected file:', selectedFile);
         setImage(selectedFile);
       } else {
-        toast.error(
-          "Invalid file type. Please select an  image file."
-        );
+        toast.error('Invalid file type. Please select an  image file.');
         setImage();
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = '';
       }
     }
   };
 
- 
   const handleIconClick = () => {
     // Trigger the file input when the icon is clicked
     fileInputRef.current.click();
@@ -147,21 +165,23 @@ export default function AddCategory(props) {
                 helperText={formik.touched.title && formik.errors.title}
               />
             </Grid>
-           {props.showFilePicker && <Grid item xs={12} sm={12}>
-              <TextField
-                name="image"
-                // label="Image"
-                type="file"
-                ref={fileInputRef}
-                onClick={handleIconClick}
-                fullWidth
-                id="image"
-                {...formik.getFieldProps('image')}
-                onChange={handleFileInputChange}
-                error={!image}
-                helperText={!image && "Image is required"}
-              />
-            </Grid>}
+            {props.showFilePicker && (
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  name="image"
+                  type="file"
+                  ref={fileInputRef}
+                  onClick={handleIconClick}
+                  fullWidth
+                  id="image"
+                  value={image ? image?.name : ''}
+                  {...formik.getFieldProps('image')}
+                  onChange={handleFileInputChange}
+                  error={!image && formik.submitCount>0 }
+                  helperText={!image  && formik.submitCount>0  && "Image is required"}
+                />
+              </Grid>
+            )}
           </Grid>
           <Button
             disabled={created}

@@ -347,16 +347,17 @@ export default function PromoCodes() {
                                 setShowDeleteAlert(false);
                                 handleCloseMenu();
                               }}
+                              opacity={"0.5"}
                             />
                           )}
                         </>
                       );
                     })}
-                    {emptyRows > 0 && (
+                    {/* {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
-                    )}
+                    )} */}
                   </TableBody>
 
                   {promoCodesData.length === 0 && (

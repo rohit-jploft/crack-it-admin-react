@@ -21,7 +21,7 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userNam
   }, [meetingId, open]);
 
   return (
-    <Dialog style={{opacity:"0.5"}} aria-labelledby="alert-dialog-title"
+    <Dialog  aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description" open={open} onClose={() => setOpen(false)} fullWidth >
       <DialogTitle>Meeting Details</DialogTitle>
       <DialogContent>

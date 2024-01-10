@@ -234,7 +234,7 @@ export default function AddPromoCode(props) {
                   style={{ width: '100%' }}
                   name="discountPercentage"
                   type="number"
-                  label="Dsicount Percent"
+                  label="Discount Percent"
                   id="discountPercentage"
                   {...formik.getFieldProps('discountPercentage')}
                   onChange={formik.handleChange}

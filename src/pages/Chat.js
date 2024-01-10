@@ -75,9 +75,9 @@ const ChatPage = () => {
       //   ]);
     });
   }, [Socket]);
-  useEffect(() => {
-    searchConvo();
-  }, [search]);
+  // useEffect(() => {
+  //   searchConvo();
+  // }, [search]);
 
   const handleConversationClick = (conversationId) => {
     setSelectedConversation(conversationId);
