@@ -124,7 +124,6 @@ export default function AddCategory(props) {
       const fileType = selectedFile.type;
       const acceptedTypes = ['image/*'];
       if (acceptedTypes.some((type) => fileType.match(type))) {
-        // File type is valid, you can handle the file here
         console.log('Selected file:', selectedFile);
         setImage(selectedFile);
       } else {
