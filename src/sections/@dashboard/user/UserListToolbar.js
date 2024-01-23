@@ -38,7 +38,7 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, placeholderAddition }) {
   return (
     <StyledRoot
       sx={{
@@ -56,7 +56,7 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
         <StyledSearch
           value={filterName}
           onChange={(e) => onFilterName(e.target.value) }
-          placeholder="Search"
+          placeholder={`Search ${placeholderAddition || ""}`}
           sx={{height:40}}
           startAdornment={
             <InputAdornment position="start">

@@ -18,6 +18,7 @@ import WithDrawalRequest from './pages/WithdrawalReq';
 import PromoCodes from './pages/PromoCodes';
 import Agencies from './pages/Agencies';
 import ContactLeads from './pages/Contact';
+import TicketsPage from './pages/TicketIssues';
 
 function AppRoutes() {
   const isAuthenticateds = isAuthenticated();
@@ -45,6 +46,10 @@ function AppRoutes() {
         {
           path: 'categories',
           element: isAuthenticateds ? <Categories /> : <Navigate to="/login" />,
+        },
+        {
+          path: 'raised/ticket',
+          element: isAuthenticateds ? <TicketsPage /> : <Navigate to="/login" />,
         },
         {
           path: 'contacts',

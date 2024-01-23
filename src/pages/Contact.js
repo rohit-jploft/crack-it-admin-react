@@ -54,7 +54,8 @@ const TABLE_HEAD = [
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'phone', label: 'Phone', alignRight: false },
   { id: 'message', label: 'Message', alignRight: false },
-  { id: 'createAt', label: 'createAt', alignRight: false },
+  { id: 'createdAt', label: 'createdAt', alignRight: false },
+  { id: 'time', label: 'Time', alignRight: false },
 
 ];
 
@@ -249,6 +250,7 @@ export default function ContactLeads() {
                         <TableCell align="left">{message}</TableCell>
 
                         <TableCell align="left">{getDateFromTimeStamps(createdAt)}</TableCell>
+                        <TableCell align="left">{getTimeFromTimestamps(createdAt)}</TableCell>
                         {/* <TableCell align="left">{getTimeFromTimestamps(startTime.toString())}</TableCell>
                         <TableCell align="left">{getTimeFromTimestamps(endTime.toString())}</TableCell> */}
 

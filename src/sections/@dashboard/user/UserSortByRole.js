@@ -9,9 +9,9 @@ UserSortByRole.propTypes = {
   onSort: PropTypes.func,
 };
 
-export default function UserSortByRole({ options,value, onSort }) {
+export default function UserSortByRole({ options,value, onSort, label }) {
   return (
-    <TextField select size="small" defaultValue=""  value={value} label="Role" onChange={onSort} style={{width:"200px", marginRight:"20px"}}>
+    <TextField select size="small" defaultValue=""  value={value} label={label || "Role"} onChange={onSort} style={{width:"200px", marginRight:"20px"}}>
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>
           {option.label}

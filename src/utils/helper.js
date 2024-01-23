@@ -11,7 +11,6 @@ export const getTimeFromTimestamps = (timeStamp) => {
   const formattedTime = date.toLocaleTimeString('en-US', options);
   return formattedTime;
 };
-
 export const getDateFromTimeStamps = (timeStamp) => {
   const date = new Date(timeStamp);
 
@@ -42,7 +41,6 @@ export function scrollToBottom(containerId) {
     container.scrollTop = container.scrollHeight;
   }
 }
-
 export const autoCapitaliseFirstLetter = (str) => {
   return str?.charAt(0).toUpperCase() + str?.slice(1)
 }

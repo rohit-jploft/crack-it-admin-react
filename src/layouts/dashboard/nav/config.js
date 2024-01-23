@@ -11,6 +11,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { isAdmin } from '../../../data/user';
 
 import SvgColor from '../../../components/svg-color';
+import TicketsPage from '../../../pages/TicketIssues';
 
 // ----------------------------------------------------------------------
 
@@ -69,6 +70,11 @@ const superAdminConfig = [
     icon: <ChatIcon/>,
   },
   {
+    title: 'Tickets',
+    path: 'raised/ticket',
+    icon: <ContactPageIcon/>,
+  },
+  {
     title: 'Contacts',
     path: '/dashboard/contacts',
     icon: <ContactPageIcon/>,
@@ -121,6 +127,11 @@ const adminConfig = [
     title: 'Contacts',
     path: '/dashboard/contacts',
     icon: <ContactPageIcon/>,
+  },
+  {
+    title: 'Tickets',
+    path: 'raised/ticket',
+    icon:<ContactPageIcon/>,
   },
   // {
   //   title: 'Not found',
