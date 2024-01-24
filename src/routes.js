@@ -19,6 +19,7 @@ import PromoCodes from './pages/PromoCodes';
 import Agencies from './pages/Agencies';
 import ContactLeads from './pages/Contact';
 import TicketsPage from './pages/TicketIssues';
+import ReasonsPage from './pages/AddReasons';
 
 function AppRoutes() {
   const isAuthenticateds = isAuthenticated();
@@ -54,6 +55,10 @@ function AppRoutes() {
         {
           path: 'contacts',
           element: isAuthenticateds ? <ContactLeads /> : <Navigate to="/login" />,
+        },
+        {
+          path: 'ticket/reasons',
+          element: isAuthenticateds ? <ReasonsPage /> : <Navigate to="/login" />,
         },
         {
           path: 'categories/:categoryId',

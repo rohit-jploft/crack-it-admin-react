@@ -2,31 +2,28 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { PersonOffOutlined, Person2Outlined } from '@mui/icons-material';
 // @mui
 import {
   Card,
   Table,
   Stack,
   Paper,
-  Avatar,
   Button,
-  Popover,
-  Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
   Typography,
-  IconButton,
   TableContainer,
   TablePagination,
   Icon,
+  TextField,
+  MenuItem,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast, ToastContainer } from 'react-toastify';
 import { useParams } from 'react-router-dom';
+import Axios from 'axios';
 
 // components
 import Label from '../components/label';
@@ -35,13 +32,9 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar, UserSortByRole } from '../sections/@dashboard/user';
 // mock
-import USERLIST, { getUsers, suspendAccount } from '../data/user';
-import { MeetingSortByStatus, BlogPostsSearch } from '../sections/@dashboard/blog/index';
-import SignUp from './SignUpPage';
-import DeleteAlert from '../components/DeleteAlert';
-import ShowExpertProfileDialog from '../components/ShowExpertProfileDailog';
 import { getAllTickets } from '../data/ticketIssues';
 import { BASE_URL } from '../constant';
+import AddFeedbackComponent from '../components/AddFeedbackComponent';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -51,39 +44,11 @@ const TABLE_HEAD = [
   { id: 'query', label: 'Query', alignRight: false },
   { id: 'attachment', label: 'Attachment', alignRight: false },
   { id: 'status', label: 'status', alignRight: false },
+  { id: 'feedbackByAdmin', label: 'feedbackByAdmin', alignRight: false },
   //   { id: 'booking', label: 'Booking Details' },
 ];
 
 // ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function TicketsPage() {
   const { userType } = useParams();
@@ -103,6 +68,10 @@ export default function TicketsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [ticketsData, setTicketsData] = useState([]);
+  const [showfeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [isFeedbackAdded, setIsFeedbackAdded] = useState(false);
+  const [isStatusChnaged, setIsStatusChanged] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState('');
 
   // pre selected role
   const preRole = userType || '';
@@ -119,32 +88,15 @@ export default function TicketsPage() {
 
   useEffect(() => {
     (async () => {
+      setIsFeedbackAdded(false);
+      setIsStatusChanged(false)
       const tickets = await getAllTickets(statusFilter, search);
 
       console.log(tickets, 'res');
       setTotalCount(tickets.pagination.totalCount);
       setTicketsData(tickets.data);
     })();
-  }, [statusFilter, search, page, rowsPerPage]);
-
-  const suspendUserAccount = async (userId, isDeleted) => {
-    setSuspendDone(true);
-    handleCloseMenu();
-
-    const res = await suspendAccount(userId, selectedUserSuspended);
-    console.log(res);
-    if (res && res?.success && res?.status === 200) {
-      toast.success(res.message);
-    }
-    setSuspendDone(false);
-  };
-  const handleOpenMenu = (event, id, isDeleted, role, verified) => {
-    setOpen(event.currentTarget);
-    setSuspenId(id);
-    setClickedRole(role);
-    setSelectedUserSuspended(isDeleted);
-    setIsExProfileVerified(verified);
-  };
+  }, [statusFilter, search, page, rowsPerPage, isFeedbackAdded, isStatusChnaged]);
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -156,30 +108,6 @@ export default function TicketsPage() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -188,17 +116,15 @@ export default function TicketsPage() {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
-
-  const handleFilterByName = (event) => {
-    // setPage(0);
-    setSearch(event.target.value);
+  const statusChangeFun = async (ticketId, statusValue) => {
+    const changeStatus = await Axios.put(`${BASE_URL}ticket/update/status/${ticketId}`, { status: statusValue });
+    console.log(changeStatus, 'change');
+    if(changeStatus && changeStatus.data && changeStatus.data.success){
+      toast.success("Status changed")
+    } else {
+      toast.error(changeStatus.data.message)
+    }
   };
-
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-  const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
@@ -268,7 +194,7 @@ export default function TicketsPage() {
                   />
                   <TableBody className="table-bodys">
                     {ticketsData?.map((row) => {
-                      const { reason, query, _id, user, status, ticketNo , attachment} = row;
+                      const { reason, query, _id, user, status, ticketNo, attachment, feedbackByAdmin } = row;
 
                       return (
                         <>
@@ -293,15 +219,54 @@ export default function TicketsPage() {
 
                             <TableCell align="left">{query}</TableCell>
                             <TableCell align="left">
-                              <Button variant="contained" onClick={() => window.open(`${BASE_URL}${attachment}`, '_blank')}>
+                              <Button
+                                variant="contained"
+                                onClick={() => window.open(`${BASE_URL}${attachment}`, '_blank')}
+                              >
                                 Open
                               </Button>
                             </TableCell>
                             <TableCell align="left">
-                              {' '}
+                              {/* {' '}
                               <Label color={status === 'OPEN' || status === 'IN_PROGRESS' ? 'warning' : 'success'}>
                                 {sentenceCase(status)}
-                              </Label>
+                              </Label> */}
+                              <TextField
+                                select
+                                size="small"
+                                defaultValue=""
+                                label="status"
+                                value={status}
+                                onChange={(e) => {
+                                  if (e.target.value !== status) {
+                                    statusChangeFun(_id, e.target.value);
+                                    setIsStatusChanged(true)
+                                  }
+                                }}
+                                style={{ width: '200px', marginRight: '20px' }}
+                              >
+                                {[
+                                  { value: 'OPEN', label: 'Open' },
+                                  { value: 'RESOLVED', label: 'Resolved' },
+                                  { value: 'IN_PROGRESS', label: 'In-progress' },
+                                ].map((option) => (
+                                  <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            </TableCell>
+                            <TableCell align="left">
+                              {feedbackByAdmin || (
+                                <Button
+                                  onClick={() => {
+                                    setShowFeedbackDialog(true);
+                                    setSelectedTicketId(_id);
+                                  }}
+                                >
+                                  Add Feedback
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                           {/* {showDeleteDailog && (
@@ -361,63 +326,16 @@ export default function TicketsPage() {
           </Card>
         )}
       </Container>
-      <ShowExpertProfileDialog
-        open={showProfileDialog}
-        setOpen={(value) => setShowProfileDailog(value)}
-        userId={suspendId}
-      />
-      {newUserClicked && (
-        <SignUp
-          title="Expert"
-          isAdmin={false}
-          close={(value) => setNewUserClicked(value)}
-          roles={[{ value: 'EXPERT', label: 'Expert' }]}
+
+      {showfeedbackDialog && (
+        <AddFeedbackComponent
+          onAddFeedback={() => console.log('pressed')}
+          onClose={() => setShowFeedbackDialog(false)}
+          open={showfeedbackDialog}
+          ticketId={selectedTicketId}
+          isFeedbackAdded={setIsFeedbackAdded}
         />
       )}
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        {clickedRole === 'EXPERT' && isExprofileVerified && (
-          <MenuItem
-            sx={{ color: 'grey.main' }}
-            onClick={() => {
-              setShowProfileDailog(true);
-              handleCloseMenu();
-            }}
-          >
-            See Profile
-          </MenuItem>
-        )}
-        <MenuItem
-          sx={{ color: selectedUserSuspended ? 'success.main' : 'error.main' }}
-          onClick={() => {
-            setDeleteDailog(true);
-          }}
-        >
-          {/* <Iconify icon={'eva:user-2-outline'} sx={{ mr: 2 }} /> */}
-          {selectedUserSuspended ? (
-            <Person2Outlined sx={{ marginRight: '4px' }} />
-          ) : (
-            <PersonOffOutlined sx={{ marginRight: '4px' }} />
-          )}
-          {selectedUserSuspended ? 'Active' : 'InActive'}
-        </MenuItem>
-      </Popover>
     </>
   );
 }

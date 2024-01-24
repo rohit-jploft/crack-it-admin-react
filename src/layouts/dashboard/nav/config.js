@@ -75,6 +75,11 @@ const superAdminConfig = [
     icon: <ContactPageIcon/>,
   },
   {
+    title: 'Reasons',
+    path: 'ticket/reasons',
+    icon: <ContactPageIcon/>,
+  },
+  {
     title: 'Contacts',
     path: '/dashboard/contacts',
     icon: <ContactPageIcon/>,
