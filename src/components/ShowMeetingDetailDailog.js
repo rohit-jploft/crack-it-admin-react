@@ -9,6 +9,7 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userNam
 
   const getProfileData = async () => {
     if (meetingId) {
+      console.log(meetingId, "meetingId")
       const res = await getSingleBookingDetail(meetingId);
       console.log(res.data, 'meeting single');
       setData(res?.data);
@@ -26,7 +27,7 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userNam
       <DialogTitle>Meeting Details</DialogTitle>
       <DialogContent>
         <Typography sx={{ margin: '5px', marginRight:"15px" }}>
-          <b>Expert Name :</b> {autoCapitaliseFirstLetter(expertName)}
+          <b>Expert Name :</b> {autoCapitaliseFirstLetter( expertName || data?.booking?.booking?.expert.firstName)}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>User Name : </b>
@@ -40,6 +41,12 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userNam
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>Meeting status :</b> {data?.booking?.booking?.status}
+        </Typography>
+        <Typography sx={{ margin: '5px' }}>
+          <b>Cancel Reason :</b> {data?.cancel?.reason?.reason}
+        </Typography>
+        <Typography sx={{ margin: '5px' }}>
+          <b>Comment</b> {data?.cancel?.comment}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>TimeZone :</b> {autoCapitaliseFirstLetter(data?.booking?.booking?.timeZone)}

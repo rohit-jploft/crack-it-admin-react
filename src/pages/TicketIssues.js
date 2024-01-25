@@ -35,17 +35,19 @@ import { UserListHead, UserListToolbar, UserSortByRole } from '../sections/@dash
 import { getAllTickets } from '../data/ticketIssues';
 import { BASE_URL } from '../constant';
 import AddFeedbackComponent from '../components/AddFeedbackComponent';
+import ShowMeetingDetailDailog from '../components/ShowMeetingDetailDailog';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'raised', label: 'Raised By(Email)', alignRight: false },
+  { id: 'bookingId', label: 'BookingId', alignRight: false },
   { id: 'ticketNo', label: 'Ticket No', alignRight: false },
-  { id: 'reason', label: 'Reason', alignRight: false },
+  { id: 'reason', label: 'Cancel Reason', alignRight: false },
   { id: 'query', label: 'Query', alignRight: false },
   { id: 'attachment', label: 'Attachment', alignRight: false },
   { id: 'status', label: 'status', alignRight: false },
   { id: 'feedbackByAdmin', label: 'feedbackByAdmin', alignRight: false },
-  //   { id: 'booking', label: 'Booking Details' },
+  { id: 'booking', label: 'Booking Details' },
 ];
 
 // ----------------------------------------------------------------------
@@ -73,6 +75,12 @@ export default function TicketsPage() {
   const [isStatusChnaged, setIsStatusChanged] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState('');
 
+
+
+  const [meetingDetailDailog, setMeetingDetailDailog] = useState(false);
+  const [selectedMeetingId, setSelectedMeetingId] = useState('')
+  const [expertName, setExpertName] = useState("")
+  const [userName, setUserName] = useState("")
   // pre selected role
   const preRole = userType || '';
 
@@ -89,8 +97,8 @@ export default function TicketsPage() {
   useEffect(() => {
     (async () => {
       setIsFeedbackAdded(false);
-      setIsStatusChanged(false)
-      const tickets = await getAllTickets(statusFilter, search);
+      setIsStatusChanged(false);
+      const tickets = await getAllTickets(statusFilter, search, page, rowsPerPage);
 
       console.log(tickets, 'res');
       setTotalCount(tickets.pagination.totalCount);
@@ -119,10 +127,10 @@ export default function TicketsPage() {
   const statusChangeFun = async (ticketId, statusValue) => {
     const changeStatus = await Axios.put(`${BASE_URL}ticket/update/status/${ticketId}`, { status: statusValue });
     console.log(changeStatus, 'change');
-    if(changeStatus && changeStatus.data && changeStatus.data.success){
-      toast.success("Status changed")
+    if (changeStatus && changeStatus.data && changeStatus.data.success) {
+      toast.success('Status changed');
     } else {
-      toast.error(changeStatus.data.message)
+      toast.error(changeStatus.data.message);
     }
   };
 
@@ -194,7 +202,7 @@ export default function TicketsPage() {
                   />
                   <TableBody className="table-bodys">
                     {ticketsData?.map((row) => {
-                      const { reason, query, _id, user, status, ticketNo, attachment, feedbackByAdmin } = row;
+                      const { reason, query, _id, user, status, ticketNo, attachment, booking, feedbackByAdmin } = row;
 
                       return (
                         <>
@@ -213,6 +221,7 @@ export default function TicketsPage() {
                             </TableCell>
 
                             <TableCell align="left">{user?.email}</TableCell>
+                            <TableCell align="left">{booking?.bookingId}</TableCell>
                             <TableCell align="left">{ticketNo}</TableCell>
 
                             <TableCell align="left">{reason?.reason}</TableCell>
@@ -221,7 +230,7 @@ export default function TicketsPage() {
                             <TableCell align="left">
                               <Button
                                 variant="contained"
-                                onClick={() => window.open(`${BASE_URL}${attachment}`, '_blank')}
+                                onClick={() => attachment ? window.open(`${BASE_URL}${attachment}`, '_blank') : alert("No Attachment")}
                               >
                                 Open
                               </Button>
@@ -233,6 +242,7 @@ export default function TicketsPage() {
                               </Label> */}
                               <TextField
                                 select
+                                disabled={feedbackByAdmin && status === 'RESOLVED'}
                                 size="small"
                                 defaultValue=""
                                 label="status"
@@ -240,7 +250,7 @@ export default function TicketsPage() {
                                 onChange={(e) => {
                                   if (e.target.value !== status) {
                                     statusChangeFun(_id, e.target.value);
-                                    setIsStatusChanged(true)
+                                    setIsStatusChanged(true);
                                   }
                                 }}
                                 style={{ width: '200px', marginRight: '20px' }}
@@ -267,6 +277,18 @@ export default function TicketsPage() {
                                   Add Feedback
                                 </Button>
                               )}
+                            </TableCell>
+                            <TableCell align="right">
+                              <Button
+                                onClick={() => {
+                                  setSelectedMeetingId(booking?._id);
+                                  setMeetingDetailDailog(true);
+                                  setExpertName(`${booking?.booking?.expert?.firstName} ${booking?.booking?.expert.lastName}`);
+                                  setUserName(`${user?.firstName} ${user.lastName}`);
+                                }}
+                              >
+                                See Details
+                              </Button>
                             </TableCell>
                           </TableRow>
                           {/* {showDeleteDailog && (
@@ -326,7 +348,7 @@ export default function TicketsPage() {
           </Card>
         )}
       </Container>
-
+      <ShowMeetingDetailDailog userName={userName}  open={meetingDetailDailog} setOpen={(value) => setMeetingDetailDailog(value)} meetingId={selectedMeetingId}/>
       {showfeedbackDialog && (
         <AddFeedbackComponent
           onAddFeedback={() => console.log('pressed')}

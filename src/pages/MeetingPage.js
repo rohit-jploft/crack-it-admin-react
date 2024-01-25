@@ -22,16 +22,17 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
-  Chip,
+  Chip, OutlinedInput, InputAdornment
 } from '@mui/material';
 // components
 import ChatIcon from '@mui/icons-material/Chat';
 import { ToastContainer, toast } from 'react-toastify';
-
+import { styled, alpha } from '@mui/material/styles';
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
+
 import 'react-toastify/dist/ReactToastify.css';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
@@ -45,6 +46,7 @@ import ShowMeetingDetailDailog from '../components/ShowMeetingDetailDailog';
 const TABLE_HEAD = [
   { id: 'expert', label: 'Expert', alignRight: false },
   { id: 'user', label: 'User', alignRight: false },
+  { id: 'meetingId', label: 'MeetingId', alignRight: false },
   { id: 'JobCategory', label: 'Job Category', alignRight: false },
   { id: 'skills', label: 'Skills', alignRight: false },
   { id: 'Date', label: 'date', alignRight: false },
@@ -54,7 +56,21 @@ const TABLE_HEAD = [
   { id: 'chat', label: 'Chat' },
   { id: 'View', label: 'View Details' },
 ];
-
+const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
+  width: 240,
+  transition: theme.transitions.create(['box-shadow', 'width'], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.shorter,
+  }),
+  '&.Mui-focused': {
+    width: 320,
+    boxShadow: theme.customShadows.z8,
+  },
+  '& fieldset': {
+    borderWidth: `1px !important`,
+    borderColor: `${alpha(theme.palette.grey[500], 0.32)} !important`,
+  },
+}));
 // ----------------------------------------------------------------------
 
 function descendingComparator(a, b, orderBy) {
@@ -114,12 +130,12 @@ export default function MeetingsPage() {
 
   useEffect(() => {
     (async () => {
-      const meetings = await getAllMeeting(status, rowsPerPage, page);
+      const meetings = await getAllMeeting(status, rowsPerPage, page, filterName);
       console.log(meetings, 'meeting');
       setTotalCount(meetings?.pagination?.totalCount);
       setMeetingsData(meetings.data);
     })();
-  }, [status, rowsPerPage, page]);
+  }, [status, rowsPerPage, page,filterName]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -203,9 +219,38 @@ export default function MeetingsPage() {
             Meeting
           </Typography>
         </Stack>
-        <Stack mb={5} direction="row" alignItems="center" justifyContent="flex-end">
+       
           {/* <BlogPostsSearch posts={[]} /> */}
 
+          {/* <MeetingSortByStatus
+            options={[
+              { value: '', label: 'All' },
+              { value: 'REQUESTED', label: 'Requested' },
+              { value: 'ACCEPTED', label: 'Accepted' },
+              { value: 'DECLINED', label: 'Declined' },
+              { value: 'CONFIRMED', label: 'Confirmed' },
+              { value: 'COMPLETED', label: 'Completed' },
+              { value: 'CANCELLED', label: 'Cancelled' },
+            ]}
+            value={status}
+            onSort={(e) => setStatus(e.target.value)}
+          /> */}
+      
+
+        <Card>
+        <Stack mb={1} direction="row" alignItems="center" justifyContent="space-between">
+        <StyledSearch
+          value={filterName}
+          onChange={(e) => setFilterName(e.target.value) }
+          placeholder={`Search Meeting Id`}
+          sx={{height:40, margin:"20px"}}
+          startAdornment={
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+            </InputAdornment>
+          }
+        />
+        {/* //   <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholderAddition={"Meeting Id"} /> */}
           <MeetingSortByStatus
             options={[
               { value: '', label: 'All' },
@@ -219,11 +264,7 @@ export default function MeetingsPage() {
             value={status}
             onSort={(e) => setStatus(e.target.value)}
           />
-        </Stack>
-
-        <Card>
-          {/* <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} /> */}
-
+            </Stack>
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -239,7 +280,7 @@ export default function MeetingsPage() {
 
                 <TableBody className="table-bodys" sx={{ maxHeight: '400px', overflow: 'auto' }}>
                   {meetingsData?.map((row) => {
-                    const { _id, jobCategory, user, expert, date, startTime, endTime, status, skillData } = row;
+                    const { _id, jobCategory, user, expert, date, startTime, endTime, status, skillData , bookingId} = row;
                     const selectedUser = selected.indexOf(_id) !== -1;
 
                     return (
@@ -252,7 +293,7 @@ export default function MeetingsPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {autoCapitaliseFirstLetter(expert?.firstName)}
+                              {autoCapitaliseFirstLetter(expert?.email)}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -262,11 +303,12 @@ export default function MeetingsPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {autoCapitaliseFirstLetter(user?.firstName)}
+                              {autoCapitaliseFirstLetter(user?.email)}
                             </Typography>
                           </Stack>
                         </TableCell>
 
+                        <TableCell align="left">{bookingId}</TableCell>
                         <TableCell align="left">{jobCategory?.title}</TableCell>
                         <TableCell align="left">
                           {skillData?.map((item) => {
