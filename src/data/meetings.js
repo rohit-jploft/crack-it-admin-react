@@ -2,7 +2,7 @@ import Axios from 'axios';
 import { BASE_URL } from '../constant';
 
 export const getAllMeeting = async (status, limit, page, search) => {
-  const meetingData = await Axios.get(`${BASE_URL}booking/get-all?status=${status}&search=${search}&limit=${limit}&page=${page}`);
+  const meetingData = await Axios.get(`${BASE_URL}booking/get-all?admin=admin&status=${status}&search=${search}&limit=${limit}&page=${page}`);
 
   return meetingData.data;
 };

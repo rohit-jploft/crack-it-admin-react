@@ -3,9 +3,12 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import { AvatarGroup, ListItemButton } from '@mui/material';
+import { getDateFromTimeStamps } from '../../utils/helper';
 
 const ConversationList = ({ conversations, onConversationClick, selectedConversation, setConvoData, search, setSearch }) => {
 
@@ -27,7 +30,7 @@ const ConversationList = ({ conversations, onConversationClick, selectedConversa
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       /> */}
-      <List>
+      <List >
         {conversations.map((conversation) => (
           <ListItemButton
             key={conversation?._id}
@@ -35,6 +38,7 @@ const ConversationList = ({ conversations, onConversationClick, selectedConversa
               handleConversationClick(conversation?._id);
               setConvoData(conversation);
             }}
+            
             className={`conversation-item custom-selected-list-item ${
               conversation?._id === selectedConversation ? 'active' : ''
             }`}
@@ -49,7 +53,12 @@ const ConversationList = ({ conversations, onConversationClick, selectedConversa
             <ListItemText
               primary={`${conversation?.participants[0]?.firstName} , ${conversation?.participants[1]?.firstName}`}
               
+              secondary={`${getDateFromTimeStamps(conversation?.createdAt ? conversation?.createdAt : conversation?.updatedAt)} - BookingId - (${conversation?.booking?.bookingId})`}
+              
             />
+            <ListItemSecondaryAction>
+              {conversation?.isClosed && <Chip variant="outlined" label="Chat closed"/>}
+          </ListItemSecondaryAction>
           </ListItemButton>
         ))}
       </List>

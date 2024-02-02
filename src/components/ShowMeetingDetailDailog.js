@@ -43,10 +43,10 @@ const ShowMeetingDetailDailog = ({ open, setOpen, meetingId, expertName, userNam
           <b>Meeting status :</b> {data?.booking?.booking?.status}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>Cancel Reason :</b> {data?.cancel?.reason?.reason}
+          <b>Cancel Reason :</b> {data?.cancel?.reason?.reason ? data?.cancel?.reason?.reason : "No value"}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
-          <b>Comment</b> {data?.cancel?.comment}
+          <b>Comment</b> {data?.cancel?.comment ? data?.cancel?.comment : "No value"}
         </Typography>
         <Typography sx={{ margin: '5px' }}>
           <b>TimeZone :</b> {autoCapitaliseFirstLetter(data?.booking?.booking?.timeZone)}

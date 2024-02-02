@@ -54,6 +54,7 @@ const TABLE_HEAD = [
   { id: 'discount', label: 'Discount', alignRight: false },
   { id: 'grandTotal', label: 'Grand Total' },
   { id: 'status', label: 'Status' },
+  { id: 'bookingStatus', label: 'Booking Status' },
 ];
 
 // ----------------------------------------------------------------------
@@ -316,6 +317,9 @@ export default function Payments() {
 
                         <TableCell align="left">
                           <Label color={status === 'PAID' ? 'success' : 'error'}>{sentenceCase(status)}</Label>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Label color={booking?.status === 'CONFIRMED' || "COMPLETED" ? 'success' : 'error'}>{sentenceCase(booking?.status)}</Label>
                         </TableCell>
 
                         {/* <TableCell align="right">

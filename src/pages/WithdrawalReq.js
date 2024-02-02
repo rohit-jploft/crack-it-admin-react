@@ -347,7 +347,7 @@ export default function WithDrawalRequest() {
               {bankData?.type === 'BANK' && (
                 <Typography variant="h6" color="text.secondary">
                   <b>Bank Name</b> : {bankData?.bankName} <br />
-                  <b>Account Name</b> : {bankData?.accountName} <br />
+                  <b>Account Holder Name</b> : {bankData?.accountName} <br />
                   <b>Account No</b> : {bankData?.accountNo} <br />
                   <b>IFSC Code</b> : {bankData?.ifscCode}
                 </Typography>

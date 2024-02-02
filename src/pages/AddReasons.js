@@ -40,6 +40,7 @@ import AddReasonDailogComponent from '../components/AddReasonDailogComponent';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'reason', label: 'Reason' },
+  { id: 'role', label: 'Role' },
   { id: 'edit', label: 'Edit' },
   { id: 'delete', label: 'delete' },
   //   { id: 'booking', label: 'Booking Details' },
@@ -68,6 +69,8 @@ export default function ReasonsPage() {
   const [isActionDone, setIsActionDone] = useState(false);
   const [showEditDailog, setShowEditDailog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+
+  const [reasonRole, setReasonRole] = useState("USER");
   const [reasonValue, setReasonValue] = useState('');
 
   // pre selected role
@@ -114,7 +117,7 @@ export default function ReasonsPage() {
     }
   };
   const editReasonFun = async (reasonId, reasonvalue) => {
-    const reasonCheck = await Axios.put(`${BASE_URL}ticket/reason/update/${reasonId}`, { reason: reasonvalue });
+    const reasonCheck = await Axios.put(`${BASE_URL}ticket/reason/update/${reasonId}`, { reason: reasonvalue, role:reasonRole });
     console.log(reasonCheck, 'change');
     if (reasonCheck && reasonCheck.data && reasonCheck.data.success) {
       setIsActionDone(true);
@@ -126,13 +129,12 @@ export default function ReasonsPage() {
     }
   };
   const AddNewReason = async (reasonvalue) => {
-    const reasonCheck = await Axios.post(`${BASE_URL}ticket/reason/create`, { reason: reasonvalue });
+    const reasonCheck = await Axios.post(`${BASE_URL}ticket/reason/create`, { reason: reasonvalue , role:reasonRole});
     console.log(reasonCheck, 'change');
     if (reasonCheck && reasonCheck.data && reasonCheck.data.success) {
       setIsActionDone(true);
       toast.success('Reason Added successfully');
     } else {
-        
       toast.error(reasonCheck.data.message);
     }
   };
@@ -172,7 +174,7 @@ export default function ReasonsPage() {
               onClick={() => {
                 setIsEdit(false);
                 setShowEditDailog(true);
-                setReasonValue("")
+                setReasonValue('');
               }}
             >
               Add new Reason
@@ -193,7 +195,7 @@ export default function ReasonsPage() {
                 />
                 <TableBody className="table-bodys">
                   {reasonsData?.map((row) => {
-                    const { reason, _id } = row;
+                    const { reason, _id, role } = row;
 
                     return (
                       <>
@@ -205,6 +207,9 @@ export default function ReasonsPage() {
                           <TableCell component="th" scope="row" padding="none" className="row-data">
                             {reason}
                           </TableCell>
+                          <TableCell component="th" scope="row" padding="none" className="row-data">
+                            {role}
+                          </TableCell>
 
                           <TableCell align="left">
                             {' '}
@@ -212,7 +217,7 @@ export default function ReasonsPage() {
                               onClick={() => {
                                 // setShowDeleteDailog(true);
                                 setIsEdit(true);
-                                setReasonValue(reason)
+                                setReasonValue(reason);
                                 setShowEditDailog(true);
                                 setSelectedReasonId(_id);
                               }}
@@ -225,7 +230,7 @@ export default function ReasonsPage() {
                             <Iconify
                               onClick={() => {
                                 setShowDeleteDailog(true);
-                                
+
                                 setSelectedReasonId(_id);
                               }}
                               icon={'eva:trash-2-outline'}
@@ -293,6 +298,8 @@ export default function ReasonsPage() {
               isEdit={isEdit}
               reasonValue={reasonValue}
               setReasonValue={(value) => setReasonValue(value)}
+              setReasonRole={(value) => setReasonRole(value)}
+              reasonRole={reasonRole}
               onEditReason={() => editReasonFun(selectedReasonId, reasonValue)}
               onAdd={() => AddNewReason(reasonValue)}
             />
